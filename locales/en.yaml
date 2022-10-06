@@ -1,0 +1,281 @@
+_lang_local: English
+_lang_english: English
+_pluralization: default
+menu:
+  add_nodes: Add nodes
+  filter: Filters
+  view_options: View options
+  hidden_nodes: Hidden nodes
+  layout: Layout options
+  load: Load graph
+  save: Save graph
+  new_graph: New graph
+  configuration: Source configuration
+  language: Language
+  settings: Settings
+  project_website: Project website
+settings:
+  title: Settings
+  permanent:
+    title: Permanent settings
+    content: All the settings are stored in local storage container in your browser.
+  language: Language
+  remote_url: Application API server
+  metaconfiguration: Default meta configuration URI
+search:
+  label: Insert IRI, name, code...
+change_configuration_and_stylesheet: Change configuration and stylesheet
+side_panel:
+  detail_panel:
+    loading: loading
+    views: Available views
+    expand: Expand
+    use: Switch
+    no_views: Server responded with no views. You should check your configuration.
+    fetching_views: Fetching views...
+    detail: Detail
+    please_select_view: Select the view first to show detailed information.
+    fetching_detail: Fetching detailed information...
+    key: Key
+    value: Value
+    hidden:
+      ffut: The node is hidden by a filter. To show it, change filter options.
+      ftuf: The node is hidden. To show it, change its visibility.
+      ffuf: The node is hidden both by filter and user. To show it, change filter options and visibility of the node.
+    part_of_group: This node is part of a group with total {n} nodes.
+    go_to_group: go to group
+    different_configuration: This node has been loaded under the {configuration-name} configuration. Refresh this node to use the new configuration.
+  list_panel:
+    title: List of selected nodes
+    group_nodes: You have selected {n} node groups.
+    group_nodes_also: You have also selected {n} node group. | You have also selected {n} node groups.
+  hidden_nodes_panel:
+    title: Hidden nodes
+    description: This panel shows nodes currently not visible in the graph. If the node is hidden by a user, red eye icon is shown. By clicking on the eye, you can change its user visibility. If the node is hidden by a filter, the filter icon is shown.
+  node_group:
+    title: Group of single nodes | Group of {n} nodes
+
+  # Component for showing a list of nodes in a group
+  node_grouped_list:
+    number_items: 1 resource | {n} resources
+    no_nodes: There are currently no nodes to be listed
+    delete: Delete
+    hide: Hide
+    show: Show
+    select: Select
+    unselect: Unselect
+    make_group: Make group
+    no_type: No type provided
+    no_type_desc: You can try to fetch types of these nodes.
+    no_type_button: Fetch
+    break_group: Break
+    split_group: Split to group
+
+  # Buttons in the side panel
+  # Some nodes are used both for single and multiple nodes and therefore you should use | for singular and plural
+  remove_group: Remove
+  remove_group_desc: Removes the group with all nodes inside from the graph
+  hide: Hide
+  hide_desc: Hides the node so it won't be visible in the graph | Hides the nodes so they won't be visible in the graph
+  unhide: Unhide
+  unhide_desc: Unhides the node | Unhides the node
+  lock_for_layouts: Lock
+  lock_for_layouts_desc: Lock node's position in the graph for layouts
+  unlock_for_layouts: Unlock
+  unlock_for_layouts_desc: Unlock node's position so it can be layouted
+  break_group: Break
+  break_group_desc: Breaks the group so all nodes from the group become visible in the graph
+  group: Group
+  group_desc: Replaces all the nodes with a single node
+  remove: Remove
+  remove_desc: Remove node from the graph | Remove nodes from the graph
+  refresh: Refresh
+  refresh_desc: Reload all data from server
+  locate: Locate | Zoom
+  locate_desc: Locate the node in the graph | Zoom to the nodes
+  leave: Leave group
+  leave_desc: This separates the node from its group and shows it in the graph.
+
+
+# Dialog to add new nodes
+add_node_dialog:
+  title: Add new nodes
+  cancel: Cancel
+  add: Add node | Add nodes
+  search:
+    title: Search nodes
+    hint: Enter the term you want to search
+  single:
+    title: Sigle node
+    input: IRI of the resource
+    error: Error occurred while fetching the resource. See developers console for more detailed information. Try to check the correctness of IRI.
+  multiple:
+    title: Multiple nodes
+    hint: Insert each IRI in separate line.
+    input: IRIs of the resources
+    error: Error occurred while fetching the resources. Nodes listed in the textarea weren’t loaded. See developers console for more detailed information. Try to check the corectness of IRI.
+
+# Dialog to filter nodes
+filter_dialog:
+  title: Filter nodes
+  select_all: select all
+  unselect_all: unselect all
+  mode_listed_disjoint: Hide (filter out) new nodes which do not meet current conditions.
+  mode_listed_disjoint_description: When unchecked, any other options which are currently not in list below will be allowed.
+  mode_listed: Show nodes having properties listed here.
+  mode_listed_description: If checked, only nodes that have at least one property from the list below will be shown. If unchecked, any node having property which is unchecked in the list below will be hidden.
+  close: Close
+
+# Translation to different filters
+filters:
+  # Degree of the nodes
+  degreeFilter:
+    title: Graph properties
+    sumDegree: Degree of the resource
+    sumDegree_description: You can choose to show only those resources having a degree in a specific range. This is useful for example to filter out most connected nodes to cleanup graph.
+    inDegree: Incoming degree of the resource
+    inDegree_description: Counts only those edges pointing into the resource.
+    outDegree: Outcoming degree of the resource
+    outDegree_description: Counts only those edges pointing out from the resource.
+  # Nodes properties
+  propertyFilter:
+    type:
+      tab: Type
+      title: Type of the resource
+      description: Choose which resources should be filtered by type.
+    class:
+      tab: Class
+      title: Class of the resource
+      description: Choose which resources should be filtered by type.
+view_options:
+  title: View options
+  nodes:
+    title: Nodes
+    full: Full
+    hide: Hide text
+    dot: Dot
+  edges:
+    title: Edges
+    full: Full
+    hide_text: Hide text
+    hide: Hide
+
+save_dialog:
+  title: Save graph?
+  text: Would you like to save current graph to a local file on your computer? You would be able to access it later.
+  yes: Yes
+  no: No
+  back: Go back
+
+searcher:
+  by_id: As resource ID '{0}'
+  supported_iri: As valid IRI
+  unsupported_iri: As non-valid IRI (probably broken)
+
+layouts:
+  cola:
+    name: Cola
+    title: Cola layout
+    performance: Cola layout may affect application performance on large graphs due to complex calculations. We suggest to use different layout for larger graphs.
+    animate: Animate
+    animate_desc: Whether the layout computation should be animated. Turning off this option may increase application performance.
+    do_layout_after_reposition: Do layout when user changes nodes positions
+    do_layout_after_reposition_desc: Whenever user changes node position, layout will run. All nodes except pinned ones will be layouted.
+    expansion_only_those: Layout only those nodes which are part of an expansion
+    expansion_only_those_desc: When user expands node, this option specifies if the whole graph or only expanded nodes should be layouted.
+    node_spacing: Node extra space
+    node_spacing_desc: Sets space around each node where any other node must not be located.
+    edge_length: Edge length
+    edge_length_desc: This option sets optimal edge length. The greater number is set, the further the nodes are.
+  circle:
+    name: Circle
+    title: Simple circle layout
+    info: This layout is very simple and works only on newly expanded nodes.
+    node_spacing: Node spacing
+    node_spacing_desc: Sets how far from each other the nodes should be when their parent is expanded.
+  dagre:
+    name: Dagre
+    title: Dagre layout
+    description: Dagre layout arranges nodes by its edges into individual groups so that from the starting node, all nodes in the group have the same depth.
+    info: This layout does not support any automatic layouting. To run layout, please click the run button or select it and press on the layout icon in the right bottom corner.
+    top_to_bottom: Layout nodes from top to bottom
+    top_to_bottom_desc: Normally, the nodes are layouted from left to right.
+    node_spacing: Node spacing
+    node_spacing_desc: Set spaces between nodes in the same rank.
+    rank_spacing: Rank spacing
+    rank_spacing_desc: Defines how far from each other are ranks.
+    run: Run this layout
+  # Common fields for layouts
+  group_expansion: Make groups of expanded nodes
+  group_expansion_limit: How many nodes
+  group_expansion_limit_desc: Specifies from how many nodes in expansion the nodes should be grouped. If the number of nodes is lower, they won't be grouped.
+
+layout_dialog:
+  title: Layout options
+  active: active
+  keep_old_layout: Keep old layout
+  change_layout: Change to this layout
+  close: Close
+
+graph:
+  groupNode: single node | {n} resources
+
+configuration_selection:
+  meta_configuration:
+    title: Select a configuration
+    unnamed: Unnamed meta configuration
+    loading: Loading meta configuration info...
+  custom_panel:
+    title: Custom configuration
+    button: Set by hand
+    meta_configuration:
+      title: Meta configuration
+      tab: Meta configuration by IRI
+      input: Meta configuration IRI
+    configuration:
+      title: Configuration
+      tab: Configuration by IRI
+      input: Configuration IRI
+    custom_configuration:
+      title: Custom configuration
+      tab: Custom configuration
+      configuration: Configuration IRI
+      stylesheet: Stylesheet IRI
+      pattern: IRI pattern
+      autocomplete: Autocomplete .json file(s)
+      confirm: Confirm
+    messages:
+      metaconfiguration_failed: Failed to load meta configuration. Please check IRI for mistakes.
+      configuration_failed:  Failed to load configuration. Please check IRI for mistakes.
+      custom_configuration_failed: Failed to load configuration. Please check IRI for mistakes. You can still fill parameters by hand.
+      custom_configuration_succeeded: Configuration loaded successfully. You can change parameters and then use the configuration.
+  node_selection:
+    unnamed: Unnamed configuration
+    choose_message: Choose a starting node
+    choose_info: You can type in IRI identifier of the node or try to search it if searching is supported by the configuration.
+    predefined: Predefined nodes
+    loading: Loading node...
+  open_from_file: Open from file / URL
+  load: Load
+  close: Close
+  back: Back
+  go_to_graph: Go to graph
+
+load_dialog:
+  title: Load graph
+  error: Failed to load graph from URL. Please check the correctness.
+  load_from_url: Load from URL
+  url: URL
+  load: Load
+  load_from_file: Load from file
+  cancel: Cancel
+
+any_data_value:
+  open_node: Show node
+
+scaling:
+  scaling_options: Scaling options
+  grouping: Grouping of clusters
+  zooming: Zoom
+hierarchy:
+  hierarchical_class: Hierarchical class

@@ -1,0 +1,314 @@
+_lang_local: čeština
+_lang_english: Czech
+_pluralization: slavic
+menu:
+  add_nodes: Přidat vrcholy
+  filter: Filtrování
+  view_options: Možnosti pohledu
+  hidden_nodes: Skryté uzly
+  layout: Nastavení layoutu
+  load: Načíst ze souboru
+  save: Uložit do souboru
+  new_graph: Nový graf
+  configuration: Konfigurace zdroje
+  language: Jazyk
+  settings: Nastavení
+  project_website: Stránky projektu
+settings:
+  title: Nastavení
+  permanent:
+    title: Trvalé změny
+    content: Veškeré změny budou uloženy do paměti local storage vašeho prohlížeče.
+  language: Jazyk aplikace
+  remote_url: Vzdálený API server
+  metaconfiguration: Výchozí URI meta konfigurace
+search:
+  label: 'Zadejte IRI, název uzlu, kód...'
+change_configuration_and_stylesheet: Změnit konfiguraci a style sheet
+side_panel:
+  detail_panel:
+    loading: načítání
+    views: Pohledy
+    expand: Expandovat
+    use: Použít
+    no_views: >-
+      Vzdálený server odpověděl, ale nedodal žádné pohledy. Měli byste
+      zkontrolovat konfiguraci serveru.
+    fetching_views: Stahování pohledů...
+    detail: Detail
+    please_select_view: Zvolte nejprve pohled pro zobrazení detailu o zdroji.
+    fetching_detail: Stahování detailu...
+    key: Položka
+    value: Hodnota
+    hidden:
+      ffut: Uzel je skrytý filtrem. Pro jeho zobrazení změňte parametry filtru.
+      ftuf: Uzel je skrytý. Pro zobrazení změňte jeho viditelnost.
+      ffuf: >-
+        Uzel je skrytý filtrem a také má vypnutou viditelnost. Pro zobrazení
+        upravte parametry filtru a změňte viditelnost uzlu.
+    part_of_group: 'Tento uzel je součástí skupiny obsahující {n} uzlů.'
+    go_to_group: přejít ke skupině
+    different_configuration: Tento uzel byl načten pod konfigurací {configuration-name}. Obnovte uzel pro použití nové konfigurace.
+  list_panel:
+    title: Seznam označených vrcholů
+    group_nodes: 'Je označeno {n} skupin.'
+    group_nodes_also: >-
+      Také je označena jedna skupina. | Také jsou označeny {n} skupiny. |
+      Také je označeno {n} skupin.
+  hidden_nodes_panel:
+    title: Skryté uzly
+    description: >-
+      Na tomto panelu najdete uzly, které nejsou vidět v grafu. Pokud je
+      uzel skrytý filtrem, ikonka filtru je u něj zobrazena. Pokud má
+      vypnutou viditelnost, je u něj zobrazená ikonka oka. Na tuto ikonku je
+      možné kliknout pro změnu viditelnosti.
+  node_group:
+    title: 'Skupina obsahující jeden uzel | Skupina {n} uzlů'
+  node_grouped_list:
+    number_items: '1 vrchol | {n} vrcholy | {n} vrcholů'
+    no_nodes: Žádné uzly k zobrazení
+    delete: Smazat
+    hide: Skrýt
+    show: Zobrazit
+    select: Vybrat
+    unselect: Zrušit výběr
+    make_group: Seskupit
+    no_type: Bez typu
+    no_type_desc: Můžete se pokusit stáhnout typy o těchto uzlech.
+    no_type_button: Stáhnout
+    break_group: Rozbít
+    split_group: Rozdělit do skupiny
+  remove_group: Smazat
+  remove_group_desc: Smaže skupinu se všemi uzly ve skupině z grafu
+  hide: Skrýt
+  hide_desc: >-
+    Skryje uzel, takže nebude v grafu viditelný | Skryje uzly, takže v grafu
+    nebudou viditelné
+  unhide: Odkrýt
+  unhide_desc: Opět zobrazí skrytý uzel | Opět zobrazí skryté uzly
+  lock_for_layouts: Uzamknout
+  lock_for_layouts_desc: Uzamkne pozici uzlu vůči layoutu | Uzamkne pozici uzlů vůči layoutu
+  unlock_for_layouts: Odemknout
+  unlock_for_layouts_desc: Odemkne pozici uzlu vůči layotu | Odemkne pozici uzlů vůči layotu
+  break_group: Rozbít
+  break_group_desc: 'Rozbije skupinu, takže všechny uzly skupiny budou samostatné'
+  group: Seskupit
+  group_desc: 'Nahradí všechny uzly jedním uzlem, který je seskupuje'
+  remove: Smazat
+  remove_desc: Smaže uzel z grafu | Smaže uzly z grafu
+  refresh: Obnovit
+  refresh_desc: Znovu načte data ze serveru
+  locate: Najít | Přiblížit
+  locate_desc: >-
+    Najde uzel v grafu a přesune na něj pohled | Nastaví pohled tak, aby
+    všechny uzly byly viditelné na obrazovce
+  leave: Opustit skupinu
+  leave_desc: Oddělí uzel ze skupiny a zobrazí ho v grafu
+add_node_dialog:
+  title: Přidání nových vrcholů
+  cancel: Zrušit
+  add: Přidat uzel | Přidat uzly
+  search:
+    title: Najít uzly
+    hint: 'Zadejte výraz, který hledáte'
+  single:
+    title: Jeden vrchol
+    input: IRI vrcholu/zdroje
+    error: >-
+      Při stahování vrcholu došlo k chybě. Více informací najdete ve
+      vývojářské konzoli prohlížeče. Zkontrolujte správnost IRI.
+  multiple:
+    title: Více vrcholů
+    hint: Každé IRI vložte na vlastní řádek.
+    input: IRI vrcholů
+    error: >-
+      Při stahování některých vrcholů došlo k chybě. Vrcholy, co se
+      nepodařilo stáhnout, jsou v textovém poli. Více informací najdete ve
+      vývojářské konzoli prohlížeče. Zkontrolujte správnost IRI.
+filter_dialog:
+  title: Filtrování uzlů
+  select_all: zaškrtnout vše
+  unselect_all: odškrtnout vše
+  mode_listed_disjoint: >-
+    Skrýt vrcholy které budou přidány a nesplňují aktuální podmínky dané
+    filtrem.
+  mode_listed_disjoint_description: >-
+    Pokud není políčko zatrhnuté, jakákoli možnost, co není v seznamu, bude
+    automaticky povolena.
+  mode_listed: Zobrazit explicitně zvolené vrcholy.
+  mode_listed_description: >-
+    Pokud je zatrhnuto, každý vrchol, co má alespoň jednu vlastnost ze
+    seznamu níže bude zobrazen. Pokud není zatrhnuto, každý vrchol, co má
+    nezatrhnutou položku bude skrytý.
+  close: Zavřít
+filters:
+  degreeFilter:
+    title: Grafové vlastnosti
+    sumDegree: Stupeň vrcholu
+    sumDegree_description: >-
+      Můžete si zvolit filtrování pouze těch vrcholů jež mají celkový
+      grafový stupeň (tedy počet sousedů) v určitém rozmezí. Toto se hodí na
+      odfiltrování vrcholů které mají spoustu sousedů a dělají graf nepřehledným.
+    inDegree: Vstupní stupeň vrcholu
+    inDegree_description: Počítá pouze ty hrany, které do vrcholu vstupují.
+    outDegree: Odchozí stupeň vrcholu
+    outDegree_description: Počítá pouze ty hrany, které z vrcholu vystupují.
+  propertyFilter:
+    type:
+      tab: Typ
+      title: Typ vrcholu
+      description: Můžete skrýt vrcholy podle typu.
+    class:
+      tab: Třída
+      title: Třída vrcholu
+      description: Můžete skrýt vrcholy mající určité třídy.
+view_options:
+  title: Možnosti pohledu
+  nodes:
+    title: Uzly
+    full: Vše
+    hide: Skrýt text
+    dot: Pouze tečka
+  edges:
+    title: Hrany
+    full: Vše
+    hide_text: Skrýt text
+    hide: Skrýt
+save_dialog:
+  title: Uložit graf?
+  text: >-
+    Přejete si uložit aktuální graf do počítače, abyste ho mohli v budoucnu
+    otevřít a pokračovat v prohlížení?
+  'yes': Ano
+  'no': Ne
+  back: Zpět
+searcher:
+  by_id: 'Jako zdroj s ID ''{0}'''
+  supported_iri: Jako validní IRI
+  unsupported_iri: Jako nevalidní IRI (pravděpodobně špatný formát)
+layouts:
+  cola:
+    name: Cola
+    title: Cola layout
+    performance: >-
+      Cola layout může značně ovlivnit výkon aplikace na větších grafech
+      kvůli složitým výpočtům. Pro větší grafy zvažte použití jiného, méně
+      náročného, layoutu.
+    animate: Animovat
+    animate_desc: >-
+      Nastaví, zda výpočet layoutu bude animován, nebo se počká až na
+      koncový stav. Vypnutím animace zvýšíte výkon.
+    do_layout_after_reposition: Spustit layoutování pokud uživatel přetahuje uzly.
+    do_layout_after_reposition_desc: >-
+      Kdykoli uživatel přesune uzel spustí se layoutování celého grafu.
+      Pokud je vypnuté, musí se layoutování spouštět ručně.
+    expansion_only_those: Při expanzi layoutovat pouze uzly expanze.
+    expansion_only_those_desc: >-
+      Pokud uživatel provede expanzi, musí proběhnout layoutování. Tímto
+      přepínačem zvolíte, zda se má layoutovat celý graf, nebo jen část, kde
+      proběhla expanze.
+    node_spacing: Extra prostor pro uzel
+    node_spacing_desc: >-
+      Nastaví kolem uzlu extra prostor, ve kterém se nesmí nacházet žádný
+      jiný uzel.
+    edge_length: Délka hran
+    edge_length_desc: >-
+      Nastaví optimální délku hran. Hodí se zvýšit v případě, že popisky uzlů
+      a hran splývají.
+  circle:
+    name: Kruhový
+    title: Jednoduchý kruhový layout
+    info: >-
+      Tento layout dokáže pouze zarovnávat nové uzly z expanze do kruhu. Nic
+      víc.
+    node_spacing: Vzdálenost uzlů
+    node_spacing_desc: >-
+      Nastavuje, jak daleko mají být od sebe uzly po expandování jejich
+      společného předka.
+  dagre:
+    name: Dagre
+    title: Dagre layout
+    description: >-
+      Dagre layout uspořádá uzly podle hran do jednotlivých skupin tak, že
+      od počátečního uzlu mají všechny uzly v dané skupině stejnou hloubku.
+    info: >-
+      Tento layout nepodporuje žádnou formu automatického layoutování. Pro
+      spuštění layoutu klikněte na tlačítko spustit, nebo lauout vyberte a
+      poté kdykoliv klikněte na tlačítko s obrázkem layoutu vpravo dole v
+      grafu.
+    top_to_bottom: Uspořádat shora dolů
+    top_to_bottom_desc: Normálně se uzly uspořádávají zleva doprava.
+    node_spacing: Vzdálenost mezi uzly
+    node_spacing_desc: 'Nastaví, jak daleko od sebe budou uzly v jedné skupině.'
+    rank_spacing: Vzdálenost mezi skupinami
+    rank_spacing_desc: 'Nastaví, jak daleko budou od sebe jednotlivé skupiny.'
+    run: Spustit layout
+  group_expansion: Expandované uzly seskupovat do skupiny
+  group_expansion_limit: Od kolika uzlů
+  group_expansion_limit_desc: >-
+    Nastaví, jaký je minimální počet nových uzlů z expanze, aby byly
+    seskupeny do skupiny. Pokud počet bude menší, uzly se zobrazí normálně.
+layout_dialog:
+  title: Nastavení layoutu
+  active: aktivní
+  keep_old_layout: Ponechat původní layout
+  change_layout: Nastavit tento layout
+  close: Zavřít
+graph:
+  groupNode: 'jeden uzel | {n} uzly | {n} uzlů'
+configuration_selection:
+  meta_configuration:
+    title: Výběr konfigurace
+    unnamed: Nepojmenovaná meta konfigurace
+    loading: Načítání informací o meta konfiguraci...
+  custom_panel:
+    title: Ruční výběr konfigurace
+    button: Nastavit ručně
+    meta_configuration:
+      title: Meta konfigurace
+      tab: Meta konfigurace podle IRI
+      input: IRI meta konfigurace
+    configuration:
+      title: Konfigurace
+      tab: Konfigurace podle IRI
+      input: IRI konfigurace
+    custom_configuration:
+      title: Vlastní konfigurace
+      tab: Vlastní konfigurace
+      configuration: IRI konfigurace
+      stylesheet: IRI stylesheetu
+      pattern: Pattern IRI
+      autocomplete: Autocomplete .json soubor(y)
+      confirm: Potvrdit
+    messages:
+      metaconfiguration_failed: Nepodařilo se načíst meta konfiguraci. Prosím zkontrolujte správnost IRI.
+      configuration_failed:  Nepodařilo se načíst konfiguraci. Prosím zkontrolujte správnost IRI.
+      custom_configuration_failed: Nepodařilo se načíst konfiguraci. Prosím zkontrolujte správnost IRI. Stále můžete zadat parametry ručně.
+      custom_configuration_succeeded: Konfigurace úspěšně načtena. Nyní můžete změnit její parametry před použitím.
+  node_selection:
+    unnamed: Nepojmenovaná konfigurace
+    choose_message: Vyberte počáteční uzel
+    choose_info: Můžete zadat IRI identifikátor uzlu nebo se ho pokusit vyhledat, pokud to daná konfigurace umožňuje.
+    predefined: Předdefinované uzly
+    loading: Načítání uzlu...
+  open_from_file: Otevřít ze souboru / URL
+  load: Načíst
+  close: Zavřít
+  back: Zpět
+  go_to_graph: Jít ke grafu
+load_dialog:
+  title: Načíst graf
+  error: Nepodařilo se načíst graf z URL. Zkontrolujte její správnost.
+  load_from_url: Z URL adresy
+  url: URL
+  load: Načíst
+  load_from_file: Ze souboru
+  cancel: Zrušit
+any_data_value:
+  open_node: Zobrazit vrchol
+scaling:
+  scaling_options: Možnosti škálování
+  grouping: Seskupování shluků
+  zooming: Zoomování
+hierarchy:
+  hierarchical_class: Hierarchická třída
