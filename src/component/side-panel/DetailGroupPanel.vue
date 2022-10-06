@@ -9,7 +9,7 @@
 
         <template v-slot:actions>
             <panel-action-button
-                    @click="node.remove()"
+                    @click="removeNode"
                     danger
                     :icon="icons.remove"
                     :text="$tc('side_panel.remove_group', 1)"
@@ -85,6 +85,21 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
         lockedForLayouts: [mdiPinOffOutline, mdiPinOutline],
         break: mdiHammer,
         locate: mdiCrosshairsGps,
+    }
+
+    removeNode() {
+        this.node.remove();
+        
+        // setup new global depth when some node is deleted
+        if (this.areaManipulator.childParentLayoutConstraints) {
+            let new_hierarchical_level = Number.MIN_SAFE_INTEGER;
+            for (let node of this.areaManipulator.graph.nocache_nodesVisual) {
+                if (new_hierarchical_level < node.hierarchicalLevel) new_hierarchical_level = node.hierarchicalLevel;
+                if (new_hierarchical_level === this.areaManipulator.globalHierarchicalDepth) return;
+            }
+
+            this.areaManipulator.globalHierarchicalDepth = new_hierarchical_level;
+        }
     }
 
     visibilityChanged() {

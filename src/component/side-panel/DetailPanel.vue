@@ -116,7 +116,7 @@
 
         <template v-if="!node.IRI.startsWith('pseudo_parent')" v-slot:actions>
             <panel-action-button
-                    @click="node.remove()"
+                    @click="removeNode"
                     danger
                     :icon="icons.remove"
                     :text="$tc('side_panel.remove', 1)"
@@ -266,6 +266,22 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
             else this.node.parent.visible = true;
         }
     }
+
+    removeNode() {
+        this.node.remove();
+        
+        // setup new global depth when some node is deleted
+        if (this.areaManipulator.childParentLayoutConstraints) {
+            let new_hierarchical_level = Number.MIN_SAFE_INTEGER;
+            for (let node of this.areaManipulator.graph.nocache_nodesVisual) {
+                if (new_hierarchical_level < node.hierarchicalLevel) new_hierarchical_level = node.hierarchicalLevel;
+                if (new_hierarchical_level === this.areaManipulator.globalHierarchicalDepth) return;
+            }
+
+            this.areaManipulator.globalHierarchicalDepth = new_hierarchical_level;
+        }
+    }
+
     /**
      * This functionality should remove all fetchable node information and download them again
      */
