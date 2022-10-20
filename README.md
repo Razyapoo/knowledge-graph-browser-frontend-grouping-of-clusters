@@ -1,5 +1,7 @@
 # Knowledge Graph Visual Browser
 
+This is extension of the original KGVB with "Grouping of clusters" approach. The original KGVB is located on https://github.com/linkedpipes/knowledge-graph-browser-frontend
+
 ## Installation
 
 ### Configuration
