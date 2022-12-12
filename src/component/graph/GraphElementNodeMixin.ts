@@ -50,6 +50,7 @@ export default class GraphElementNodeMixin extends Vue {
     }
 
     /** Set up parent for all children in case expanded node is a parent node */ 
+    @Watch('node.children')
     private setParent(): void {
         let cy = this.areaManipulator.cy;
         if (this.node.children?.length > 0) {
@@ -59,7 +60,7 @@ export default class GraphElementNodeMixin extends Vue {
                     cy.getElementById(child.identifier).move({
                         parent: parent
                     });
-                    child.element.element.data().parent = this.node.identifier;
+                    // child.element.element.data().parent = this.node.identifier;
                 }
             }
         }

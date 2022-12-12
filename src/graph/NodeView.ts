@@ -45,6 +45,11 @@ export class NodeView implements ObjectSave {
      */
     viewSet: NodeViewSet;
 
+    /**
+     * Description of the view
+     */
+    viewDescription: string;
+
     detail: DetailValue[] = null;
     preview: NodePreview = null;
     expansion: Expansion;
@@ -184,27 +189,25 @@ export class NodeView implements ObjectSave {
                     }
                 }
                 if (found) {
-                    if (!source.mounted || !target.mounted) {
-                        if (this.node == target && this.node.children.length > 0 && this.node.children[0].isMountedInHierarchy && !this.node.children[0].mounted) {
-                            alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
-                            this.expansionInProgress = false;
-                            return new Expansion(this.node);
-                        }
+                    if (target.children.length > 0 && target.children[0].isMountedInHierarchy && !target.children[0].mounted) {
+                        alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
+                        this.expansionInProgress = false;
+                        return new Expansion(this.node);
+                    }
 
-                        let pseudoParent = this.node.graph.getNodeByIRI("pseudo_parent_" + this.node.hierarchicalClass);
-                        if (pseudoParent && source.parent === pseudoParent) {
-                            pseudoParent.children.splice(
-                                pseudoParent.children.indexOf(source), 1
-                            );
-                            target.parent = pseudoParent;
-                            if (!pseudoParent.children.find(child => child.identifier === this.node.identifier)) {
-                                pseudoParent.children.push(this.node);
-                            }
+                    let pseudoParent = this.node.graph.getNodeByIRI("pseudo_parent_" + this.node.hierarchicalClass);
+                    if (pseudoParent && source.parent === pseudoParent) {
+                        pseudoParent.children.splice(
+                            pseudoParent.children.indexOf(source), 1
+                        );
+                        target.parent = pseudoParent;
+                        if (!pseudoParent.children.find(child => child.identifier === this.node.identifier)) {
+                            pseudoParent.children.push(this.node);
                         }
-                        source.parent = target;
-                        if (!target.children.find(child => child.identifier === expansionEdge.source)) {
-                            target.children.push(source);
-                        }
+                    }
+                    source.parent = target;
+                    if (!target.children.find(child => child.identifier === expansionEdge.source)) {
+                        target.children.push(source);
                     }
                     // expansion is hierarchical
                     this.expansion.hierarchical = true;

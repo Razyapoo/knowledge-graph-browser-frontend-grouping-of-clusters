@@ -267,6 +267,7 @@ export class Node extends NodeCommon implements ObjectSave {
                 for (let nv of result.views) {
                     let view = this.createView(nv.iri);
                     view.label = nv.label;
+                    view.viewDescription = nv.viewDescription;
 
                     nodeViews[nv.iri] = view;
                 }

@@ -379,14 +379,14 @@ export default class Application extends Mixins(ApplicationLoadStoreMixin) {
                     if (constraint.properties["classesToApplyConstraint"].length === 1) {
                     this.areaManipulator.hierarchicalGroupsToCluster.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
                     } else {
-                    console.error("Each \"hierarchical groups to cluster\" constraint must refer to only one class.");
+                        console.error("Each \"hierarchical groups to cluster\" constraint must refer to only one class.");
                     }
                 }
                 if (constraint.type === "visual-groups" && Array.isArray(constraint.properties["classesToApplyConstraint"])) {
                     if (constraint.properties["classesToApplyConstraint"].length === 1) {
                     this.areaManipulator.visualGroups.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
                     } else {
-                    console.error("Each \"visual groups\" constraint must refer to only one class.");
+                        console.error("Each \"visual groups\" constraint must refer to only one class.");
                     }
                 }
                 if (constraint.type === "classes-to-cluster-together" && Array.isArray(constraint.properties["classesToApplyConstraint"])) {

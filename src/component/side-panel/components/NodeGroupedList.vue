@@ -25,10 +25,14 @@
                         <v-btn v-if="splitGroupButton" @click="groupSplitGroup(group)">{{ $t('side_panel.node_grouped_list.split_group') }}</v-btn>
                     </div>
 
+                    <v-text-field v-model="searchValue" label="Search node" clearable color="silver">
+                        <v-icon slot="prepend"> {{ icons.zoomIcon }}</v-icon>
+                    </v-text-field>
+
                     <v-simple-table dense>
                         <template v-slot:default>
                             <tbody>
-                            <tr v-for="node in group.nodes" :key="node.IRI">
+                            <tr v-for="node in filterNodes(group.nodes)" :key="node.IRI">
                                 <td class="table-node-actions">
                                     <link-component :href="node.IRI" />
                                     <v-btn v-if="modeHiddenNodes" icon text x-small @click="node.visible = !node.visible"><v-icon small :color="node.visible ? 'grey lighten-3' : 'primary'">{{ icons.visibility[node.visible ? 1 : 0] }}</v-icon></v-btn>
@@ -56,7 +60,7 @@
     import {Component, Emit, Prop, Watch} from "vue-property-decorator";
     import Vue from "vue";
     import {Node, NodeType} from "../../../graph/Node";
-    import {mdiEye, mdiEyeOff, mdiFilter, mdiFilterOutline} from "@mdi/js";
+    import {mdiEye, mdiEyeOff, mdiFilter, mdiFilterOutline, mdiMagnify} from "@mdi/js";
     import LinkComponent from "../../helper/LinkComponent.vue";
     import GraphManipulator from "../../../graph/GraphManipulator";
 
@@ -82,9 +86,25 @@
         @Prop(Boolean) breakGroupButton!: boolean;
         @Prop(Boolean) splitGroupButton!: boolean;
 
+        private searchValue: String = "";
+        
+
+        filterNodes(nodes) {
+            let filteredNodes = nodes;
+
+            if (this.searchValue != "" && this.searchValue) {
+                filteredNodes = nodes.filter(node => { return node.IRI.toLowerCase().includes(this.searchValue.toLowerCase())})
+            }
+
+            filteredNodes = filteredNodes.sort();
+
+            return filteredNodes;
+        }
+
         private readonly icons = {
             visibility: [mdiEyeOff, mdiEye],
             filter: [mdiFilterOutline, mdiFilter],
+            zoomIcon: mdiMagnify,
         }
 
         private fetchTypesLoading = false;

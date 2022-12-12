@@ -77,7 +77,7 @@
                                 <template v-for="viewSet in viewSets">
                                     <v-list-item :key="viewSet.IRI" disabled>{{viewSet.label}}</v-list-item>
                                     <v-list-item v-for="view in viewSet.views" :key="view.IRI" :value="view.IRI" @click="view.use()">
-                                        <v-list-item-content>
+                                        <v-list-item-content :title="view.viewDescription">
                                             <v-list-item-title style="flex-basis: auto;" class="flex-grow-1">{{view.label}}</v-list-item-title>
                                             <v-btn style="flex-basis: auto;" class="flex-grow-0" small color="secondary" :loading="view.expansionInProgress" @click.stop="areaManipulator.expandNode(view)">{{ $t("side_panel.detail_panel.expand") }}</v-btn>
                                         </v-list-item-content>
