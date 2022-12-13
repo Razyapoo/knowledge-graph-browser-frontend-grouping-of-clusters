@@ -58,7 +58,7 @@ export default abstract class NodeCommon implements ObjectSave {
     hierarchicalLevel: number = 0;
 
     /** Indicates whether a node is mounted in hierarchy. In case it is not mounted in a graph area. */
-    isMountedInHierarchy: boolean = false;
+    isUnmountedAndHiddenInHierarchy: boolean = false;
 
     /**
      * Safely removes the element from the graph.

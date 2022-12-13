@@ -189,7 +189,7 @@ export class NodeView implements ObjectSave {
                     }
                 }
                 if (found) {
-                    if (target.children.length > 0 && target.children[0].isMountedInHierarchy && !target.children[0].mounted) {
+                    if (target.children.length > 0 && target.children[0].isUnmountedAndHiddenInHierarchy && !target.children[0].mounted) {
                         alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
                         this.expansionInProgress = false;
                         return new Expansion(this.node);

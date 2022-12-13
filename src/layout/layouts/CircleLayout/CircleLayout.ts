@@ -37,7 +37,7 @@ export default class CircleLayout extends Layout {
 
         // First step, mount and position the nodes which are not mounted yet
         let notMountedNodes = expansion.nodes.filter(node => !node.mounted);
-        if (this.constraintRulesLoaded && this.areaManipulator.childParentLayoutConstraints.length > 0) notMountedNodes = notMountedNodes.filter(node => !node.isMountedInHierarchy);
+        if (this.constraintRulesLoaded && this.areaManipulator.childParentLayoutConstraints.length > 0) notMountedNodes = notMountedNodes.filter(node => !node.isUnmountedAndHiddenInHierarchy);
         let position = expansion.parentNode.selfOrGroup.element?.element?.position();
 
         this.executeLayout(notMountedNodes, position);

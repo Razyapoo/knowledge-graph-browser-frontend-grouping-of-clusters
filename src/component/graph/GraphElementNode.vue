@@ -56,22 +56,22 @@ export default class GraphElementNode extends Mixins(GraphElementNodeMixin) {
             let parent = this.node.parent;
             
             if (parent) {
-                if (!this.node.hierarchicalClass) this.node.hierarchicalClass = parent.hierarchicalClass;
+                // if (!this.node.hierarchicalClass) this.node.hierarchicalClass = parent.hierarchicalClass;
                 this.node.hierarchicalLevel = parent.hierarchicalLevel + 1;
             } else if (this.node.children.length > 0) {
-                if (!this.node.hierarchicalClass) this.node.hierarchicalClass = this.node.children[0].hierarchicalClass;
+                // if (!this.node.hierarchicalClass) this.node.hierarchicalClass = this.node.children[0].hierarchicalClass;
                 this.node.hierarchicalLevel = this.node.children[0].hierarchicalLevel - 1;
-            } else {
-                if (this.areaManipulator.hierarchicalGroupsToCluster.length > 0) {
-                    for (let hierarchicalGroupToCluster of this.areaManipulator.hierarchicalGroupsToCluster) {
-                        if (this.node.classes.includes(hierarchicalGroupToCluster)) {
-                            this.node.hierarchicalClass = hierarchicalGroupToCluster;
-                        }
+            } 
+            
+            if (this.areaManipulator.hierarchicalGroupsToCluster.length > 0) {
+                for (let hierarchicalGroupToCluster of this.areaManipulator.hierarchicalGroupsToCluster) {
+                    if (this.node.classes.includes(hierarchicalGroupToCluster)) {
+                        this.node.hierarchicalClass = hierarchicalGroupToCluster;
                     }
                 }
-                else {
-                    this.node.hierarchicalClass = null;
-                }
+            }
+            else {
+                this.node.hierarchicalClass = null;
             }
 
             // Add pseudo-parent node as parent if node is the root in a hierarchy and has no parent
@@ -92,10 +92,6 @@ export default class GraphElementNode extends Mixins(GraphElementNodeMixin) {
                 }
             }
 
-            // update the depth of a hierarchy
-            if ((this.areaManipulator.globalHierarchicalDepth < this.node.hierarchicalLevel) && this.areaManipulator.hierarchicalGroupsToCluster.find(hierarchicalGroupToCluster => hierarchicalGroupToCluster === this.node.hierarchicalClass) && !this.node.mountedFromGroup) {
-                this.areaManipulator.globalHierarchicalDepth = this.node.hierarchicalLevel;
-            }
 
             this.node.mountedFromGroup = false;
         }

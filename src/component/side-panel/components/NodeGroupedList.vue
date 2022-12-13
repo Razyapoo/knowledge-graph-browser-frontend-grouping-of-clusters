@@ -86,20 +86,6 @@
         @Prop(Boolean) breakGroupButton!: boolean;
         @Prop(Boolean) splitGroupButton!: boolean;
 
-        private searchValue: String = "";
-        
-
-        filterNodes(nodes) {
-            let filteredNodes = nodes;
-
-            if (this.searchValue != "" && this.searchValue) {
-                filteredNodes = nodes.filter(node => { return node.IRI.toLowerCase().includes(this.searchValue.toLowerCase())})
-            }
-
-            filteredNodes = filteredNodes.sort();
-
-            return filteredNodes;
-        }
 
         private readonly icons = {
             visibility: [mdiEyeOff, mdiEye],
@@ -118,6 +104,29 @@
             await Promise.all(promises);
             this.fetchTypesLoading = false;
         }
+
+        private searchValue: String = "";
+        private filterNodes(nodes: Node[]) {
+            nodes = nodes.sort((n1,n2) => {
+                if (n1.currentView?.preview?.label > n2.currentView?.preview?.label) {
+                    return 1;
+                }
+
+                if (n1.currentView?.preview?.label < n2.currentView?.preview?.label) {
+                    return -1;
+                }
+
+                return 0;
+            });
+
+            let filteredNodes = nodes
+            if (this.searchValue != "" && this.searchValue) {
+                filteredNodes = nodes.filter(node => { return node.currentView?.preview?.label.toLowerCase().includes(this.searchValue.toLowerCase())})
+            }
+
+            return filteredNodes;
+        }
+        
         @Watch('groups')
         private groupsUpdated() {
             this.fetchTypesLoading = false;

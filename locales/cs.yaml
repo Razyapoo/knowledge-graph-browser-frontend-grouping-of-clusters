@@ -306,9 +306,13 @@ load_dialog:
   cancel: Zrušit
 any_data_value:
   open_node: Zobrazit vrchol
-scaling:
-  scaling_options: Možnosti škálování
-  grouping: Seskupování shluků
-  zooming: Zoomování
+zooming:
+  zooming_options: Možnosti zoomování
+  global_grouping: Globální seskupení shluků
+  global_grouping_hint: Pokud vyberete globální a lokální seskupení shluků současně, zrušte výběr všech uzlů pro aplikace globálního seskupení shluků 
+  local_grouping: Lokální seskupení shluků 
+  zooming: Přiblížení / Oddálení
+  local_grouping_hint: Vyberte uzel, na který chcete použit lokální seskupení shluků
 hierarchy:
   hierarchical_class: Hierarchická třída
+  hint: 'Vyberte si jakýkoli typ seskupení shluků a také přibližení/oddalení, abyste mohli využívat funkce mapovacích platforem'

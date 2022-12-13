@@ -151,7 +151,7 @@ export default class GraphManipulator {
         
         nodeGroup.onMountPosition = [position_add.x / position_count, position_add.y / position_count];
         nodeGroup.mounted = true;
-        nodeGroup.selected = true;
+        if (!(this.area.childParentLayoutConstraints.length > 0 && this.layoutManager?.currentLayout?.supportsHierarchicalView && this.layoutManager?.currentLayout?.constraintRulesLoaded)) nodeGroup.selected = true;
 
         // In the next tick run the layout
         Vue.nextTick(() => this.area.layoutManager.currentLayout.run());

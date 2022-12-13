@@ -5,20 +5,33 @@
 		<v-toolbar flat dense floating class="ma-3 toolbar" :style="leftStyle">
 			<search-component :graph-searcher="graphSearcher" @searched="manipulator.locateOrTryFetchNode($event)"></search-component>
 		</v-toolbar>
-		<v-main v-if="layoutManager.currentLayout.constraintRulesLoaded && layoutManager.currentLayout.supportsHierarchicalView" title='Hint: Check both to cluster and zoom at the same time' class="checkbox" :disabled="modeCompact" :style="rightStyle">
+		<v-main v-if="layoutManager.currentLayout.constraintRulesLoaded && layoutManager.currentLayout.supportsHierarchicalView" :title="$t('hierarchy.hint')" class="checkbox" :disabled="modeCompact" :style="rightStyle">
 			<v-container>
-				<p>{{ $tc('scaling.scaling_options', 1) }}</p>
-				<v-checkbox
-					class="ma-0 pa-0"
-					:label="$tc('scaling.grouping', 1)"
-					@click = "groupingOfClustersEvent()"
-				></v-checkbox>
-				<v-checkbox
-					class="ma-0 pa-0"
-					:label="$tc('scaling.zooming', 1)"
-					:input-value="true"
-					@click = "zoomingEvent()"
-				></v-checkbox>
+				<p>{{ $tc('zooming.zooming_options', 1) }}</p>
+				<v-main :title="$t('zooming.global_grouping_hint')">
+					<v-checkbox
+						class="ma-0 pa-0"
+						:label="$tc('zooming.global_grouping', 1)"
+						
+						@click = "groupingOfClustersEvent(true)"
+					></v-checkbox>
+				</v-main>
+				<v-main :title="$t('zooming.local_grouping_hint')">
+					<v-checkbox
+						class="ma-0 pa-0"
+						:label="$tc('zooming.local_grouping', 1)"
+						:title="$t('zooming.local_grouping_hint')"
+						@click = "groupingOfClustersEvent(false)"
+					></v-checkbox>
+				</v-main>
+				<v-main title="">
+					<v-checkbox
+						class="ma-0 pa-0"
+						:label="$tc('zooming.zooming', 1)"
+						:input-value="true"
+						@click = "zoomingEvent()"
+					></v-checkbox>
+				</v-main>
 			</v-container>
 		</v-main>
 		<div class="my-3 mx-5 buttons v-toolbar" :style="rightStyle">
@@ -247,14 +260,22 @@ export default class GraphArea extends Mixins(GraphAreaStylesheetMixin) {
 	 * Handles grouping of clusters event \
 	 * For more information see https://github.com/Razyapoo/KGBClusteringDocumentation/blob/main/user_documentation.md#checkbox-1 
 	 */
-	public groupingOfClustersEvent() {
-		
-		if (this.areaManipulator.isGroupingOfClustersChecked) {
-			this.areaManipulator.isGroupingOfClustersChecked = false;
+	public groupingOfClustersEvent(global: boolean = true) {
+		if (global) {
+			if (this.areaManipulator.isGlobalGroupingOfClustersChecked) {
+				this.areaManipulator.isGlobalGroupingOfClustersChecked = false;
+			}
+			else {
+				this.areaManipulator.isGlobalGroupingOfClustersChecked = true;
+			}	
+		} else {
+			if (this.areaManipulator.isLocalGroupingOfClustersChecked) {
+				this.areaManipulator.isLocalGroupingOfClustersChecked = false;
+			}
+			else {
+				this.areaManipulator.isLocalGroupingOfClustersChecked = true;
+			}	
 		}
-		else {
-			this.areaManipulator.isGroupingOfClustersChecked = true;
-		}	
 
 	}
 	// #endregion

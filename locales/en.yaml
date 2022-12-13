@@ -273,9 +273,13 @@ load_dialog:
 any_data_value:
   open_node: Show node
 
-scaling:
-  scaling_options: Scaling options
-  grouping: Grouping of clusters
-  zooming: Zoom
+zooming:
+  zooming_options: Zoom options
+  global_grouping: Global grouping of clusters
+  global_grouping_hint: If you select global and local grouping of clusters at the same time, deselect all nodes for global grouping of clusters applications
+  local_grouping: Local grouping of clusters
+  local_grouping_hint: Select the node to which you want to apply local grouping of clusters
+  zooming: Zoom In / Zoom Out
 hierarchy:
   hierarchical_class: Hierarchical class
+  hint: 'Hint: Choose any type of cluster grouping as well as zoom in/out to take advantage of the mapping platforms features'

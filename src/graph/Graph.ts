@@ -61,16 +61,16 @@ export class Graph implements ObjectSave {
     }
 
     /** returns unmounted nodes and groups */
-    public get nocache_nodesUnmounted(): NodeCommon[] {
+    public get nocache_nodesHiddenInHierarchy(): NodeCommon[] {
         let nodes: NodeCommon[] = [];
         for (let iri in this.nodes) {
             let node = this.nodes[iri];
-            if (!node.mounted && !node.belongsToGroup) {
+            if (node.isUnmountedAndHiddenInHierarchy) {
                 nodes.push(node);
             }
         }
 
-        return [...nodes, ...this.groups.filter(group => !group.mounted)];
+        return [...nodes, ...this.groups.filter(group => group.isUnmountedAndHiddenInHierarchy)];
     }
 
     /** returns mounted nodes only */ 

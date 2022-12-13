@@ -57,20 +57,21 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
             let parent = this.node.parent;        
 
             if (parent) {
-                if (!this.node.hierarchicalClass) this.node.hierarchicalClass = parent.hierarchicalClass;
+                // if (!this.node.hierarchicalClass) this.node.hierarchicalClass = parent.hierarchicalClass;
                 this.node.hierarchicalLevel = parent.hierarchicalLevel + 1;
-            } else {
-                if (this.areaManipulator.hierarchicalGroupsToCluster.length > 0) {
-                    for (let hierarchicalGroupToCluster of this.areaManipulator.hierarchicalGroupsToCluster) {
-                        if (this.node.classes.includes(hierarchicalGroupToCluster)) {
-                            this.node.hierarchicalClass = hierarchicalGroupToCluster;
-                        }
+            } 
+            
+            if (this.areaManipulator.hierarchicalGroupsToCluster.length > 0) {
+                for (let hierarchicalGroupToCluster of this.areaManipulator.hierarchicalGroupsToCluster) {
+                    if (this.node.classes.includes(hierarchicalGroupToCluster)) {
+                        this.node.hierarchicalClass = hierarchicalGroupToCluster;
                     }
                 }
-                else {
-                    this.node.hierarchicalClass = null;
-                }
             }
+            else {
+                this.node.hierarchicalClass = null;
+            }
+
 
             // Add pseudo-parent node as parent if node is the root in a hierarchy and has no parent
             if (this.areaManipulator.visualGroups.length > 0) {
@@ -90,10 +91,6 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
                 }
             }
 
-            // update the depth of a hierarchy
-            if ((this.areaManipulator.globalHierarchicalDepth < this.node.hierarchicalLevel) && this.areaManipulator.hierarchicalGroupsToCluster.find(hierarchicalGroupToCluster => hierarchicalGroupToCluster === this.node.hierarchicalClass)) {
-                this.areaManipulator.globalHierarchicalDepth = this.node.hierarchicalLevel;
-            }
         }
     }
 
@@ -111,12 +108,33 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
     }
 
     private get label(): string {
-        return <string>this.$tc('graph.groupNode', this.node.nodes.length);
+        if (this.areaManipulator.layoutManager.currentLayout.constraintRulesLoaded) return <string>this.mostFrequentType + " (" + this.node.nodes.length + ")" ;
+        else return <string>this.$tc('graph.groupNode', this.node.nodes.length);
     }
 
     @Watch('label')
     private labelChanged() {
         this.element?.data("label", this.label);
+    }
+
+    private get mostFrequentType(): string {
+        let frequencyTable = new Map<string, number>()
+
+        let maxFrequency = 1
+        let mostFrequent = ""
+        this.node.nodes.forEach(node => {
+            if (frequencyTable.has(node.lastPreview.type.label)) {
+                let counter = frequencyTable.get(node.lastPreview.type.label) + 1
+                frequencyTable.set(node.lastPreview.type.label, counter);
+                if (counter >= maxFrequency){
+                    maxFrequency = counter;
+                    mostFrequent = node.lastPreview.type.label;
+                }
+            } else {
+                frequencyTable.set(node.lastPreview.type.label, 1);
+            }
+        })
+        return mostFrequent;
     }
 
     // noinspection JSUnusedGlobalSymbols
