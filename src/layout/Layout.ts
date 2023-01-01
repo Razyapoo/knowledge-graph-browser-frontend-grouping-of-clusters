@@ -85,8 +85,12 @@ export default abstract class Layout implements ObjectSave {
      * @param nodes Nodes to be mounted
      * @param group Old group where nodes were. May be unmouted the next tick.
      */
-    onGroupBroken(nodes: Node[], group: NodeGroup) {
-        nodes.forEach(node => node.mounted = true);
+    onGroupBroken(nodes: NodeCommon[], group: NodeGroup) {
+        nodes.forEach(node => {
+            if (!node.belongsToGroup) {
+                node.mounted = true
+            }
+        });
     }
 
     abstract restoreFromObject(object: any): void;

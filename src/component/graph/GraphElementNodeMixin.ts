@@ -37,11 +37,11 @@ export default class GraphElementNodeMixin extends Vue {
         if (this.node.selected) {
             this.element.select();
             // make parent node selectable
-            if (this.areaManipulator.childParentLayoutConstraints.length > 0) {
+            if (this.areaManipulator.hierarchicalGroups.length > 0) {
                 let node = this.node;
                 while (node.parent) {
                     node = node.parent;
-                    node.element.element.selectify();
+                    node.element?.element?.selectify();
                 }
             }
         } else {
@@ -60,7 +60,6 @@ export default class GraphElementNodeMixin extends Vue {
                     cy.getElementById(child.identifier).move({
                         parent: parent
                     });
-                    // child.element.element.data().parent = this.node.identifier;
                 }
             }
         }
@@ -96,12 +95,12 @@ export default class GraphElementNodeMixin extends Vue {
 
         this.registerElement();
 
-        if (this.areaManipulator.childParentLayoutConstraints.length > 0) this.setParent();
+        if (this.areaManipulator.hierarchicalGroups.length > 0) this.setParent();
 
         this.element.scratch("_component", this);
 
         this.element.on("select", () => {
-            if (this.areaManipulator.childParentLayoutConstraints.length > 0) {
+            if (this.areaManipulator.hierarchicalGroups.length > 0) {
                 if (this.node.element.element.selectable()) this.node.selected = true;
                 // set parent node unselectable when selecting only a child, because when selecting a child node, parent node is selected as well
                 let node = this.node;

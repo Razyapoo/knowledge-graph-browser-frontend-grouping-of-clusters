@@ -73,18 +73,6 @@ export class Graph implements ObjectSave {
         return [...nodes, ...this.groups.filter(group => group.isUnmountedAndHiddenInHierarchy)];
     }
 
-    /** returns mounted nodes only */ 
-    public get mountedNodes(): Node[] {
-        let nodes: Node[] = [];
-        for (let iri in this.nodes) {
-            let node = this.nodes[iri];
-            if (node.mounted && !node.belongsToGroup) {
-                nodes.push(node);
-            }
-        }
-
-        return nodes;
-    }
     
     public get nodesVisual(): NodeCommon[] {
         return this.vuexComponent?.nodesVisual ?? this.nocache_nodesVisual;

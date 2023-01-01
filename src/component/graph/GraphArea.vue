@@ -191,7 +191,9 @@ export default class GraphArea extends Mixins(GraphAreaStylesheetMixin) {
 		let edges: GroupEdge[] = [];
 
 		for (let group of this.graph.groups) {
-			edges = [...edges, ...group.visibleGroupEdges];
+			if (group.mounted) {
+				edges = [...edges, ...group.visibleGroupEdges];
+			}
 		}
 
 		return edges;

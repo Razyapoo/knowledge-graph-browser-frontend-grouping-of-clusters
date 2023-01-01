@@ -4,6 +4,8 @@ import { Node } from "./Node";
 import GraphElementNodeMixin from "../component/graph/GraphElementNodeMixin";
 import GraphElementNode from "../component/graph/GraphElementNode.vue";
 import GraphElementNodeGroup from "../component/graph/GraphElementNodeGroup.vue";
+import NodeGroup from "./NodeGroup";
+import EdgeCommon from "./EdgeCommon";
 
 export default abstract class NodeCommon implements ObjectSave {
     /**
@@ -23,6 +25,8 @@ export default abstract class NodeCommon implements ObjectSave {
      */
     mounted: boolean = false;
 
+    belongsToGroup: NodeGroup | null = null;
+
     /**
      * You can specify the initial position of node.
      * VISUAL GRAPH FEATURE
@@ -39,7 +43,7 @@ export default abstract class NodeCommon implements ObjectSave {
      * All incoming and outgoing edges.
      * Used for traversing the graph.
      */
-    connectedEdges: any[] = [];
+    connectedEdges: EdgeCommon[] = [];
 
     /**
      * Node's parent
@@ -54,11 +58,16 @@ export default abstract class NodeCommon implements ObjectSave {
     /** Indicates which hierarchical group the node belongs to. */
     hierarchicalClass: string;
 
+    /** Indicates which visual group the node belongs to. */
+    visualGroupClass: string;
+
     /** Indicates at what hierarchical level the node is located. */
     hierarchicalLevel: number = 0;
 
     /** Indicates whether a node is mounted in hierarchy. In case it is not mounted in a graph area. */
     isUnmountedAndHiddenInHierarchy: boolean = false;
+
+    abstract get shownByFilters(): boolean;
 
     /**
      * Safely removes the element from the graph.

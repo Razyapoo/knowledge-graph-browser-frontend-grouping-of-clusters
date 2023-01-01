@@ -53,7 +53,7 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
 
     @Watch('node.classes')
     protected setHierarchicalInfo() {
-        if (!this.node.identifier.startsWith("pseudo_parent_") && (this.areaManipulator.layoutManager.currentLayout.constraintRulesLoaded) && (this.areaManipulator.layoutManager?.currentLayout?.supportsHierarchicalView)) {
+        if (!this.node.identifier.startsWith("pseudo_parent_") && (this.areaManipulator?.layoutManager?.currentLayout?.constraintRulesLoaded) && (this.areaManipulator?.layoutManager?.currentLayout?.supportsHierarchicalView)) {
             let parent = this.node.parent;        
 
             if (parent) {
@@ -61,10 +61,11 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
                 this.node.hierarchicalLevel = parent.hierarchicalLevel + 1;
             } 
             
-            if (this.areaManipulator.hierarchicalGroupsToCluster.length > 0) {
-                for (let hierarchicalGroupToCluster of this.areaManipulator.hierarchicalGroupsToCluster) {
-                    if (this.node.classes.includes(hierarchicalGroupToCluster)) {
-                        this.node.hierarchicalClass = hierarchicalGroupToCluster;
+            if (this.areaManipulator.hierarchicalGroups.length > 0) {
+                for (let hierarchicalGroup of this.areaManipulator.hierarchicalGroups) {
+                    let hierarchicalClass = hierarchicalGroup['nodeSelector'].slice(1);
+                    if (this.node.classes.includes(hierarchicalClass)) {
+                        this.node.hierarchicalClass = hierarchicalClass;
                     }
                 }
             }
@@ -76,10 +77,13 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
             // Add pseudo-parent node as parent if node is the root in a hierarchy and has no parent
             if (this.areaManipulator.visualGroups.length > 0) {
                 for (let visualGroup of this.areaManipulator.visualGroups) {
-                    if (!parent && this.node.hierarchicalClass && this.node.classes.includes(visualGroup)) {
-                        let pseudoParent = this.node.graph.getNodeByIRI("pseudo_parent_" + this.node.hierarchicalClass);
+                    if (this.node.classes.includes(visualGroup)) {
+                        this.node.visualGroupClass = visualGroup;
+                    }
+                    if (!parent && this.node.visualGroupClass && this.node.classes.includes(visualGroup)) {
+                        let pseudoParent = this.node.graph.getNodeByIRI("pseudo_parent_" + this.node.visualGroupClass);
                         if (!pseudoParent) {
-                            pseudoParent = this.node.graph.createNode("pseudo_parent_" + this.node.hierarchicalClass);
+                            pseudoParent = this.node.graph.createNode("pseudo_parent_" + this.node.visualGroupClass);
                             pseudoParent.hierarchicalLevel = this.node.hierarchicalLevel - 1;
                             pseudoParent.mounted = true;
                         }
@@ -89,6 +93,8 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
                         this.node.parent = pseudoParent;
                     }
                 }
+            } else {
+                this.node.visualGroupClass = null;
             }
 
         }
@@ -108,35 +114,15 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
     }
 
     private get label(): string {
-        if (this.areaManipulator.layoutManager.currentLayout.constraintRulesLoaded) return <string>this.mostFrequentType + " (" + this.node.nodes.length + ")" ;
-        else return <string>this.$tc('graph.groupNode', this.node.nodes.length);
+        if (this.areaManipulator.layoutManager?.currentLayout?.constraintRulesLoaded) return <string>this.node?.mostFrequentType?.label + " (" + this.node.nodes.length + ")" ;
+        return <string>this.$tc('graph.groupNode', this.node.nodes.length);
     }
 
     @Watch('label')
     private labelChanged() {
         this.element?.data("label", this.label);
     }
-
-    private get mostFrequentType(): string {
-        let frequencyTable = new Map<string, number>()
-
-        let maxFrequency = 1
-        let mostFrequent = ""
-        this.node.nodes.forEach(node => {
-            if (frequencyTable.has(node.lastPreview.type.label)) {
-                let counter = frequencyTable.get(node.lastPreview.type.label) + 1
-                frequencyTable.set(node.lastPreview.type.label, counter);
-                if (counter >= maxFrequency){
-                    maxFrequency = counter;
-                    mostFrequent = node.lastPreview.type.label;
-                }
-            } else {
-                frequencyTable.set(node.lastPreview.type.label, 1);
-            }
-        })
-        return mostFrequent;
-    }
-
+    
     // noinspection JSUnusedGlobalSymbols
     /**
      * Event handler for double-clicking on the node, which is defined in GraphArea.vue

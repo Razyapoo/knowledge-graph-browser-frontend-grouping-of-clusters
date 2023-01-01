@@ -5,6 +5,8 @@
             <v-chip label v-for="cls in previewClasses" :key="cls.label" :color="cls.color" style="vertical-align: super;" class="mx-2">{{cls.label}}</v-chip>
         </div>
 
+        <v-alert v-if="node.belongsToGroup && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView" type="info" color="secondary" dense text>{{ $tc("side_panel.detail_panel.part_of_group", node.belongsToGroup.nodes.length) }} <v-btn small text color="primary" @click="node.belongsToGroup.selectExclusively()">{{ $tc("side_panel.detail_panel.go_to_group") }}</v-btn></v-alert>
+        
         <node-grouped-list delete-button break-group-button split-group-button :manipulator="manipulator" :groups="groupedNodes" @nodeSelected="$event.selectExclusively()" />
 
         <template v-slot:actions>
@@ -41,6 +43,14 @@
                     :text="$tc('side_panel.' + (node.lockedForLayouts ? 'unlock' : 'lock') + '_for_layouts', 1)"
                     :help="$tc('side_panel.' + (node.lockedForLayouts ? 'unlock' : 'lock') + '_for_layouts_desc', 1)"
             />
+            <panel-action-button
+                    :width="1"
+                    v-if="node.belongsToGroup && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView"
+                    @click="manipulator.leaveGroup([node], node.belongsToGroup)"
+                    :icon="icons.leave"
+                    :text="$tc('side_panel.leave', 1)"
+                    :help="$tc('side_panel.leave_desc', 1)"
+            />
         </template>
     </panel-template>
 </template>
@@ -55,7 +65,8 @@ import {
     mdiPinOffOutline,
     mdiPinOutline,
     mdiHammer,
-    mdiCrosshairsGps
+    mdiCrosshairsGps,
+    mdiApplicationExport
 } from '@mdi/js';
 import NodeGroupedList from "./components/NodeGroupedList.vue";
 import GraphManipulator from "../../graph/GraphManipulator";
@@ -64,10 +75,11 @@ import NodeGroup from "../../graph/NodeGroup";
 import NodeCommonPanelMixin from "./NodeCommonPanelMixin";
 import PanelTemplate from "./components/PanelTemplate.vue";
 import PanelActionButton from "./components/PanelActionButton.vue";
+import NodeCommon from '@/graph/NodeCommon';
 
 interface NodeTypeGroup {
     type: NodeType;
-    nodes: Node[];
+    nodes: NodeCommon[];
 }
 
 @Component({
@@ -85,6 +97,7 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
         lockedForLayouts: [mdiPinOffOutline, mdiPinOutline],
         break: mdiHammer,
         locate: mdiCrosshairsGps,
+        leave: mdiApplicationExport,
     }
 
     removeNode() {
@@ -93,7 +106,7 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
 
     visibilityChanged() {
         this.node.visible = !this.node.visible;
-        if ((this.areaManipulator.visualGroups.length > 0) && this.node.parent?.identifier.startsWith("pseudo_parent")) {
+        if ((this.areaManipulator?.visualGroups.length > 0) && this.node.parent?.identifier.startsWith("pseudo_parent")) {
             if (this.node.parent?.children?.every(childNode => childNode.visible === false)) this.node.parent.visible = false;
             else this.node.parent.visible = true;
         }
@@ -106,7 +119,9 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
     get groupedNodes(): NodeTypeGroup[] {
         let map = new Map<string, NodeTypeGroup>();
         for (let node of this.node.nodes) {
-            let type = node.currentView?.preview?.type;
+            let type: NodeType;
+            if (node instanceof Node) type = node.currentView?.preview?.type;
+            if (node instanceof NodeGroup) type = node.mostFrequentType;
             let group: NodeTypeGroup;
             if (map.has(type?.iri)) {
                 group = map.get(type?.iri);

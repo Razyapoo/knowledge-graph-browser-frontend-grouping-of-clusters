@@ -24,9 +24,12 @@
                             <b>{{$tc('hierarchy.hierarchical_class', 1)}}: </b> 
                             <v-chip label :key="getHierarchicalClass.label" :color="getHierarchicalClass.color" style="vertical-align: super;" class="mx-2">{{getHierarchicalClass.label}}</v-chip>
                         </div>
-                        
+                        <div v-if="getVisualGroupClass">
+                            <b>{{$tc('visual_group.visual_group_class', 1)}}: </b> 
+                            <v-chip label :key="getVisualGroupClass.label" :color="getVisualGroupClass.color" style="vertical-align: super;" class="mx-2">{{getVisualGroupClass.label}}</v-chip>
+                        </div>
                     </div>
-                    <h1 v-else-if="node.IRI.startsWith('pseudo_parent')">Visual group "{{ node.children[0].hierarchicalClass }}"</h1>
+                    <h1 v-else-if="node.IRI.startsWith('pseudo_parent')">Visual group "{{ node.children[0].visualGroupClass }}"</h1>
                     <h1 v-else>{{ $t("side_panel.detail_panel.loading") }}</h1>
                 </div>
 
@@ -113,6 +116,42 @@
                         {{ $t("side_panel.detail_panel.no_type_info") }}
                     </v-card-text>
                 </v-card>
+                <v-expansion-panels accordion multiple v-if="areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView">
+                    <v-expansion-panel v-if="node.children.length > 0">
+                        <v-expansion-panel-header>
+                            <div><b v-if="!node.IRI.startsWith('pseudo_parent')">List of children</b> <b v-else>List of nodes</b> - {{ $tc('side_panel.node_grouped_list.number_items', node.children.length) }}</div>
+                                
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+
+                            <v-text-field v-model="searchValue" label="Search node" clearable color="silver">
+                                <v-icon slot="prepend"> {{ icons.zoomIcon }}</v-icon>
+                            </v-text-field>
+
+                            <v-simple-table dense>
+                                <template v-slot:default>
+                                    <tbody>
+                                    <tr v-for="childNode in filterNodes(node.children)" :key="childNode.identifier">
+                                        
+                                        <td>
+                                            <div v-if="isNode(childNode)" class="table-node-actions">
+                                                <link-component :href="childNode.identifier" />
+                                            </div>
+                                            <div v-else>
+                                                <v-icon>{{ icons.group }}</v-icon>
+                                            </div>
+                                        </td>
+                                        <td class="table-node-name" @click="childNode.selectExclusively()" :title="getLabel(childNode)">
+                                            {{ getLabel(childNode) }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </v-simple-table>
+
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
 
         <template v-if="!node.IRI.startsWith('pseudo_parent')" v-slot:actions>
             <panel-action-button
@@ -174,7 +213,9 @@ import {
     mdiWeb,
     mdiPinOutline,
     mdiPinOffOutline,
-    mdiApplicationExport
+    mdiApplicationExport,
+    mdiMagnify,
+    mdiGroup
 } from '@mdi/js';
 import GraphAreaManipulator from "../../graph/GraphAreaManipulator";
 import LinkComponent from "../helper/LinkComponent.vue";
@@ -183,6 +224,8 @@ import PanelTemplate from "./components/PanelTemplate.vue";
 import PanelActionButton from "./components/PanelActionButton.vue";
 import GraphManipulator from "../../graph/GraphManipulator";
 import AnyDataValue from "@/component/helper/AnyDataValue.vue";
+import NodeCommon from '@/graph/NodeCommon';
+import NodeGroup from '@/graph/NodeGroup';
 
 @Component({
     components: {AnyDataValue, PanelActionButton, PanelTemplate, LinkComponent}
@@ -201,6 +244,8 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
         link: mdiWeb,
         lockedForLayouts: [mdiPinOffOutline, mdiPinOutline],
         leave: mdiApplicationExport,
+        zoomIcon: mdiMagnify,
+        group: mdiGroup,
     }
 
     currentViewIRI: string = null;
@@ -227,6 +272,14 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
         }
     }
 
+    get getVisualGroupClass(): {label: string; color: string} {
+        for (let cls of this.previewClasses) {
+            if (cls.label === this.node.visualGroupClass) {
+                return cls;
+            }
+        }
+    }
+
     /**
      * Converts viewSets to array
      */
@@ -247,7 +300,7 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
             return null;
         }
 
-        let result = this.node.lastDetail.filter(detail => ['.jpg', '.png', '.bmp'].includes(detail.value.substr(detail.value.length - 4)));
+        let result = this.node.lastDetail.filter(detail => ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.bmp', '.BMP'].includes(detail.value.substr(detail.value.length - 4)));
 
         return result.length ? result : null;
     }
@@ -255,6 +308,56 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
     mounted() {
         this.nodeChanged();
     }
+
+    private searchValue: String = "";
+    private filterNodes(nodes: NodeCommon[]) {
+        // nodes = nodes.filter(node => node instanceof Node);
+
+        nodes = nodes.slice().sort((n1,n2) => {
+            let label1: string = "";
+            let label2: string = "";
+
+            if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
+            else if (n1 instanceof NodeGroup) label1 = n1.mostFrequentType?.label;
+
+            if (n2 instanceof Node) label2 = n2.currentView?.preview?.label; 
+            else if (n2 instanceof NodeGroup) label2 = n2.mostFrequentType?.label;
+
+            if ( label1 > label2 ) {
+                return 1;
+            }
+
+            if ( label1 < label2 ) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        let filteredNodes = nodes;
+        if (this.searchValue != "" && this.searchValue) {
+            filteredNodes = nodes.filter(node => { 
+                if (node instanceof Node) return node.currentView?.preview?.label.toLowerCase().includes(this.searchValue.toLowerCase());
+                else if (node instanceof NodeGroup) return node.mostFrequentType?.label.toLowerCase().includes(this.searchValue.toLowerCase());
+            })
+        }
+
+        return filteredNodes;
+    }
+    
+    private isNode(node: NodeCommon) {
+        return (node instanceof Node)
+    }
+
+    private getLabel(node: NodeCommon) {
+            if (node instanceof Node) return node.currentView?.preview ? node.currentView.preview.label : "-";
+            if (node instanceof NodeGroup) return node.mostFrequentType ? node.mostFrequentType.label + " (" + node.nodes.length + ")" : "-";
+        }
+
+    // @Emit('nodeSelected')
+    // private nodeSelected(node: NodeCommon) {
+    //     return node;
+    // }
 
     visibilityChanged() {
         this.node.visible = !this.node.visible;
@@ -282,14 +385,14 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
     async nodeChanged() {
         if (!this.node.viewSets) await this.node.fetchViewSets();
         if (!this.node.currentView?.IRI) await this.node.useDefaultView(); // Current view could have been obtained from expansion (in this case it won't contain IRI) and therefore it also needs to be replaced
-        if (!this.node.currentView?.preview) await this.node.currentView.fetchPreview();
+        if (!this.node.currentView?.preview) await this.node.currentView?.fetchPreview();
         this.currentViewChanged();
     }
 
     @Watch('node.currentView')
     async currentViewChanged() {
         this.currentViewIRI = this.node.currentView?.IRI;
-        if (this.node.currentView?.IRI) await this.node.currentView.getDetail();
+        if (this.node.currentView?.IRI) await this.node.currentView?.getDetail();
     }
 }
 </script>
@@ -330,6 +433,17 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
         }
     }
 
+    .table-node-name {
+        cursor: pointer;
+
+        /** Working solution from the Internet **/
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 1px;
+
+        width: 100%;
+    }
     .image-title {
         text-align: right;
         color: white;

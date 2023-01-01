@@ -316,3 +316,5 @@ zooming:
 hierarchy:
   hierarchical_class: Hierarchická třída
   hint: 'Vyberte si jakýkoli typ seskupení shluků a také přibližení/oddalení, abyste mohli využívat funkce mapovacích platforem'
+visual_group:
+  visual_group_class: Vizuální třída

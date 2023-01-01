@@ -283,3 +283,5 @@ zooming:
 hierarchy:
   hierarchical_class: Hierarchical class
   hint: 'Hint: Choose any type of cluster grouping as well as zoom in/out to take advantage of the mapping platforms features'
+visual_group:
+  visual_group_class: Visual class

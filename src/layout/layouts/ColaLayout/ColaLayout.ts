@@ -70,7 +70,7 @@ export default class ColaLayout extends Layout {
     }
 
     onDrag(isStartNotEnd: boolean) {
-        if (this.options.doLayoutAfterReposition && (!isStartNotEnd || (this.options.animate && !this.areaManipulator.layoutManager.currentLayout.constraintRulesLoaded))) {
+        if (this.options.doLayoutAfterReposition && (!isStartNotEnd || (this.options.animate && !this.areaManipulator?.layoutManager?.currentLayout?.constraintRulesLoaded))) {
             this.executeLayout(this.getCollectionToAnimate());
         }
     };
@@ -103,7 +103,7 @@ export default class ColaLayout extends Layout {
                 position.x + distance * circNum * Math.cos(2*Math.PI*phi/circumference),
                 position.y + distance * circNum * Math.sin(2*Math.PI*phi/circumference)
             ];
-            node.mounted = true;
+            if (!node.belongsToGroup) node.mounted = true;
 
             phi++; i++;
         }
@@ -113,7 +113,7 @@ export default class ColaLayout extends Layout {
 
         // First step, mount and position the nodes which are not mounted yet
         let notMountedNodes = expansion.nodes.filter(node => !node.mounted);
-        if (this.constraintRulesLoaded && this.areaManipulator.childParentLayoutConstraints.length > 0) notMountedNodes = notMountedNodes.filter(node => !node.isUnmountedAndHiddenInHierarchy);
+        if (this.constraintRulesLoaded && this.areaManipulator.hierarchicalGroups.length > 0) notMountedNodes = notMountedNodes.filter(node => !node.isUnmountedAndHiddenInHierarchy);
         let currentPosition = expansion.parentNode.selfOrGroup.element.element.position();
         let group: NodeGroup = null;
 
@@ -126,7 +126,7 @@ export default class ColaLayout extends Layout {
             for (let node of nodes) {
                 node.mounted = true;
                 group.addNode(node);
-                if (this.areaManipulator.childParentLayoutConstraints.length > 0) {
+                if (this.areaManipulator.hierarchicalGroups.length > 0) {
                     if (node.parent) {
                         if (!group.parent) {
                             group.parent = node.parent;
@@ -145,6 +145,10 @@ export default class ColaLayout extends Layout {
     
                     if (!group.hierarchicalClass && node.hierarchicalClass) {
                         group.hierarchicalClass = node.hierarchicalClass;
+                    }
+
+                    if (!group.visualGroupClass && node.visualGroupClass) {
+                        group.visualGroupClass = node.visualGroupClass;
                     }
                 }
             }
@@ -165,7 +169,7 @@ export default class ColaLayout extends Layout {
                     if (this.areaManipulator.classesToClusterTogether.length > 0) {
                         while (nodesToClusterByClass.length === 0 && classesToClusterTogetherID < this.areaManipulator.classesToClusterTogether.length) {
                             notMountedNodes.forEach(node => {
-                                if ((node instanceof NodeGroup) && (this.areaManipulator.isSubset(node.nocache_nonhierarchicalClassesOfNodes, this.areaManipulator.classesToClusterTogether[classesToClusterTogetherID]) || this.areaManipulator.isSubset(this.areaManipulator.classesToClusterTogether[classesToClusterTogetherID], node.nocache_nonhierarchicalClassesOfNodes))) {
+                                if ((node instanceof NodeGroup) && (this.areaManipulator.isSubset(node.nonHierarchicalOrVisualClassesOfNodes, this.areaManipulator.classesToClusterTogether[classesToClusterTogetherID]) || this.areaManipulator.isSubset(this.areaManipulator.classesToClusterTogether[classesToClusterTogetherID], node.nonHierarchicalOrVisualClassesOfNodes))) {
                                     nodesToClusterByClass.push(node);
                                 } else if (this.areaManipulator.classesToClusterTogether[classesToClusterTogetherID].find(cl => node.classes.includes(cl))) {
                                     nodesToClusterByClass.push(node);
@@ -181,7 +185,7 @@ export default class ColaLayout extends Layout {
                             if (!nodeClass) {
                                 if (node.classes.length > 1) {
                                     for (let nodeAnotherClass of node.classes) {
-                                        if (nodeAnotherClass !== node.hierarchicalClass) {
+                                        if (nodeAnotherClass !== node.hierarchicalClass && nodeAnotherClass !== node.visualGroupClass) {
                                             nodeClass = nodeAnotherClass;
                                         }
                                     }

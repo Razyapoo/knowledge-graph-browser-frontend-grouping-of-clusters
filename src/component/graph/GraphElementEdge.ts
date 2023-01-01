@@ -122,6 +122,7 @@ export default class GraphElementEdge extends Vue {
     beforeDestroy() {
         if (this.element){
             this.cy.remove(this.element);
+            this.element = null;
         }
     };
 

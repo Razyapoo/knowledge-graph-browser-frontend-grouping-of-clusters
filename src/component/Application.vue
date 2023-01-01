@@ -373,18 +373,18 @@ export default class Application extends Mixins(ApplicationLoadStoreMixin) {
             this.layouts.currentLayout.constraintRulesLoaded = false;
         }
 
-        if (this.layouts.currentLayout.constraintRulesLoaded && (this.areaManipulator.hierarchicalGroupsToCluster.length === 0) && (this.areaManipulator.visualGroups.length === 0) && (this.areaManipulator.classesToClusterTogether.length === 0) && (this.areaManipulator.childParentLayoutConstraints.length === 0)) {
+        if (this.layouts.currentLayout.constraintRulesLoaded && (this.areaManipulator.groupsToCluster.length === 0) && (this.areaManipulator.visualGroups.length === 0) && (this.areaManipulator.classesToClusterTogether.length === 0) && (this.areaManipulator.hierarchicalGroups.length === 0)) {
             for (let constraint of this.areaManipulator.constraintRules.constraints) {
-                if (constraint.type === "hierarchical-groups-to-cluster" && Array.isArray(constraint.properties["classesToApplyConstraint"])) {
+                if (constraint.type === "groups-to-cluster" && Array.isArray(constraint.properties["classesToApplyConstraint"])) {
                     if (constraint.properties["classesToApplyConstraint"].length === 1) {
-                    this.areaManipulator.hierarchicalGroupsToCluster.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
+                    this.areaManipulator.groupsToCluster.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
                     } else {
                         console.error("Each \"hierarchical groups to cluster\" constraint must refer to only one class.");
                     }
                 }
                 if (constraint.type === "visual-groups" && Array.isArray(constraint.properties["classesToApplyConstraint"])) {
                     if (constraint.properties["classesToApplyConstraint"].length === 1) {
-                    this.areaManipulator.visualGroups.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
+                        this.areaManipulator.visualGroups.push(constraint.properties["classesToApplyConstraint"][0].slice(1))
                     } else {
                         console.error("Each \"visual groups\" constraint must refer to only one class.");
                     }
@@ -396,8 +396,8 @@ export default class Application extends Mixins(ApplicationLoadStoreMixin) {
                     })
                     this.areaManipulator.classesToClusterTogether.push(classesToApplyConstraint);
                 }
-                if (constraint.type === "child-parent-relation") {
-                    this.areaManipulator.childParentLayoutConstraints.push(constraint.properties);
+                if (constraint.type === "hierarchical-groups") {
+                    this.areaManipulator.hierarchicalGroups.push(constraint.properties);
                 }
             }
         }
