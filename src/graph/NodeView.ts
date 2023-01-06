@@ -169,11 +169,7 @@ export class NodeView implements ObjectSave {
 
             // Create edges
             for (let expansionEdge of result.edges) {
-                let edge = this.node.graph.createEdge(
-                    this.node.graph.getNodeByIRI(expansionEdge.source),
-                    this.node.graph.getNodeByIRI(expansionEdge.target), types.get(expansionEdge.type)
-                );
-                edge.classes = expansionEdge.classes;
+               
                 // set up hierarchical relations
                 // for more information see https://github.com/Razyapoo/KGBClusteringDocumentation/blob/main/technical_documentation.md#extension-of-the-nodeviewts
                 let found = false;
@@ -189,7 +185,6 @@ export class NodeView implements ObjectSave {
                     }
                 }
                 if (found) {
-                    
                     if (target.children.length > 0 && target.children[0].isUnmountedAndHiddenInHierarchy && !target.children[0].mounted) {
                         alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
                         this.expansionInProgress = false;
@@ -217,6 +212,11 @@ export class NodeView implements ObjectSave {
                 } else {
                     // expansion is not hierarchical
                     this.expansion.hierarchical = false;
+                    let edge = this.node.graph.createEdge(
+                        this.node.graph.getNodeByIRI(expansionEdge.source),
+                        this.node.graph.getNodeByIRI(expansionEdge.target), types.get(expansionEdge.type)
+                    );
+                    edge.classes = expansionEdge.classes;
                 }
             }
         }

@@ -46,11 +46,19 @@
                                 </td>
                                 <td class="table-node-name" @click="nodeSelected(node)" :title="getLabel(node)">
                                     {{ getLabel(node) }}
+                                    
                                 </td>
                             </tr>
                             </tbody>
                         </template>
                     </v-simple-table>
+                    <!-- <div v-for="node in filterNodes(group.nodes)" :key="node.identifier">
+                        <nested-list-of-children
+                            :nodes="getNodes(node)" 
+                            :depth="0"   
+                            :label="getLabel(node)"
+                        ></nested-list-of-children>
+                    </div> -->
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
@@ -71,6 +79,7 @@
     import GraphManipulator from "../../../graph/GraphManipulator";
     import NodeCommon from "@/graph/NodeCommon";
     import NodeGroup from "@/graph/NodeGroup";
+    import NestedListOfChildren from "./NestedListOfChildren.vue";
 
     interface NodeTypeGroup {
         type: NodeType;
@@ -78,7 +87,7 @@
     }
 
     @Component({
-        components: {LinkComponent}
+        components: {LinkComponent, NestedListOfChildren }
     })
     export default class NodeGroupedList extends Vue {
         @Prop() groups: NodeTypeGroup[];
@@ -123,10 +132,10 @@
                 let label2: string = "";
 
                 if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
-                else if (n1 instanceof NodeGroup) label1 = n1.mostFrequentType?.label;
+                else if (n1 instanceof NodeGroup) label1 = n1.getName;
 
                 if (n2 instanceof Node) label2 = n2.currentView?.preview?.label; 
-                else if (n2 instanceof NodeGroup) label2 = n2.mostFrequentType?.label;
+                else if (n2 instanceof NodeGroup) label2 = n2.getName;
 
                 if ( label1 > label2 ) {
                     return 1;
@@ -143,11 +152,19 @@
             if (this.searchValue != "" && this.searchValue) {
                 filteredNodes = nodes.filter(node => { 
                     if (node instanceof Node) return node.currentView?.preview?.label.toLowerCase().includes(this.searchValue.toLowerCase());
-                    else if (node instanceof NodeGroup) return node.mostFrequentType?.label.toLowerCase().includes(this.searchValue.toLowerCase());
+                    else if (node instanceof NodeGroup) return node.getName.toLowerCase().includes(this.searchValue.toLowerCase());
                 })
             }
 
             return filteredNodes;
+        }
+        
+        private getNodes(node: NodeCommon) {
+            if (node instanceof NodeGroup) {
+                return node.nodes;
+            } else if (node.children?.length > 0) {
+                return node.children;
+            }
         }
         
         private isNode(node: NodeCommon) {
@@ -156,7 +173,9 @@
 
         private getLabel(node: NodeCommon) {
             if (node instanceof Node) return node.currentView?.preview ? node.currentView.preview.label : "-";
-            if (node instanceof NodeGroup) return node.mostFrequentType ? node.mostFrequentType.label + " (" + node.nodes.length + ")" : "-";
+            // if (node instanceof NodeGroup) return node.mostFrequentType ? node.mostFrequentType.label + " (" + node.nodes.length + ")" : "-";
+            if (node instanceof NodeGroup) return node.getName;
+
         }
 
         @Watch('groups')

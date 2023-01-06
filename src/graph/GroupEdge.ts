@@ -13,7 +13,6 @@ export default class GroupEdge extends EdgeCommon {
     public readonly source: NodeCommon = null;
     public readonly target: NodeCommon = null;
 
-
     constructor(source: typeof GroupEdge.prototype.source, target: typeof GroupEdge.prototype.target, type: EdgeType) {
         super();
         this.source = source;

@@ -73,7 +73,6 @@ export class Graph implements ObjectSave {
         return [...nodes, ...this.groups.filter(group => group.isUnmountedAndHiddenInHierarchy)];
     }
 
-    
     public get nodesVisual(): NodeCommon[] {
         return this.vuexComponent?.nodesVisual ?? this.nocache_nodesVisual;
     }

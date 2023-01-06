@@ -93,6 +93,8 @@ export default abstract class Layout implements ObjectSave {
         });
     }
 
+    onGroupChangedCompact() {};
+
     abstract restoreFromObject(object: any): void;
 
     abstract saveToObject(): object;

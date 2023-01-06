@@ -4,6 +4,9 @@ import clone from "clone";
 import GraphAreaManipulator from "../../graph/GraphAreaManipulator";
 import NodeCommon from "../../graph/NodeCommon";
 import {mdiPinOutline} from "@mdi/js";
+import { throws } from "assert";
+import NodeGroup from "@/graph/NodeGroup";
+import "./hover.scss"
 
 @Component
 export default class GraphElementNodeMixin extends Vue {
@@ -41,7 +44,12 @@ export default class GraphElementNodeMixin extends Vue {
                 let node = this.node;
                 while (node.parent) {
                     node = node.parent;
-                    node.element?.element?.selectify();
+                    node.element?.element.selectify();
+                }
+                node = this.node;
+                while (node.groupCompactParent) {
+                    node = node.groupCompactParent;
+                    node.element?.element.selectify();
                 }
             }
         } else {
@@ -101,20 +109,54 @@ export default class GraphElementNodeMixin extends Vue {
 
         this.element.on("select", () => {
             if (this.areaManipulator.hierarchicalGroups.length > 0) {
-                if (this.node.element.element.selectable()) this.node.selected = true;
+                if (this.node.element.element.selectable()) { 
+                    this.node.selected = true;
+                }
                 // set parent node unselectable when selecting only a child, because when selecting a child node, parent node is selected as well
                 let node = this.node;
                 while (node.parent) {
                     node = node.parent;
-                    node.element.element.unselectify();
+                    node.element?.element.unselectify();
+                }
+                node = this.node;
+                while (node.groupCompactParent) {
+                    node = node.groupCompactParent;
+                    node.element?.element.unselectify();
                 }
             } else {
                 this.node.selected = true;
             }
         });
         
-        this.element.on("unselect", () => this.node.selected = false);
+        this.element.on("unselect", () => 
+            this.node.selected = false
+        );
+        if (this.node instanceof NodeGroup) {
+            let title = this.node.listOfNodesAsTitle; 
+            this.element.unbind("mouseover");
+            this.element.bind("mouseover", (event) => {
+                event.target.popperRefObj = event.target.popper({
+                    content: () => {
+                        let content = document.createElement("div");
 
+                        content.classList.add("hover");
+
+                        content.innerHTML = title;
+
+                        document.body.appendChild(content);
+                        return content;
+                    },
+                });
+            });
+
+            this.element.unbind("mouseout");
+            this.element.bind("mouseout", (event) => {
+            if (event.target.popper) {
+                event.target.popperRefObj.options.modifiers.removeOnDestroy = true;
+                event.target.popperRefObj.destroy();
+            }
+            });
+        }
         this.showPopperChanged();
         this.nodeLockingSupportedChanged();
 
@@ -129,6 +171,20 @@ export default class GraphElementNodeMixin extends Vue {
     }
 
     //#region Compact mode
+    public makePopper(ele) {
+        let ref = ele.popperRef(); // used only for positioning
+    
+        ele.tippy = tippy(ref, { // tippy options:
+          content: () => {
+            let content = document.createElement('div');
+    
+            content.innerHTML = ele.id();
+    
+            return content;
+          },
+          trigger: 'manual' // probably want manual mode
+        });
+      }
 
     /**
      * Compact mode is a mode where selected nodes with all its neighbours are layouted independently of others
@@ -138,16 +194,16 @@ export default class GraphElementNodeMixin extends Vue {
     private originalPositionBeforeCompact: Position = null;
 
     private get compactModeLocked(): boolean {
-        return this.modeCompact && (!this.node.selected && !this.node.neighbourSelected);
+        return this.modeCompact && (!this.node.selected && !this.node.neighbourSelected && !this.node.parent?.selected && (this.node.groupCompactBelongsToGroupCache == null));
     }
 
     private get compactModeUnlocked(): boolean {
-        return this.modeCompact && (this.node.selected || this.node.neighbourSelected);
+        return this.modeCompact && (this.node.selected || this.node.neighbourSelected || this.node.parent?.selected || (this.node.groupCompactBelongsToGroupCache != null));
     }
 
     @Watch('compactModeLocked')
     private compactModeLockedChanged() {
-        this.element.toggleClass("__compact_inactive", this.compactModeLocked);
+        this.element?.toggleClass("__compact_inactive", this.compactModeLocked);
     }
 
     @Watch('compactModeUnlocked')
@@ -335,7 +391,6 @@ export default class GraphElementNodeMixin extends Vue {
     private neighbourSelectedChanged() {
         this.element?.toggleClass("__active", this.node.neighbourSelected || this.explicitlyActive || this.node.selected);
     }
-
     /**
      * Functions return ready class list which can be used to pass to cytoscape
      */
@@ -353,6 +408,10 @@ export default class GraphElementNodeMixin extends Vue {
 
         if (this.compactModeLocked) {
             cls.push("__compact_inactive");
+        }
+
+        if (this.node.children[0]?.isUnmountedAndHiddenInHierarchy) {
+            cls.push("__nested_node");
         }
 
         return cls;

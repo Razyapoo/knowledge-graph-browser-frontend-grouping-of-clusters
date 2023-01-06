@@ -27,6 +27,9 @@ export default abstract class NodeCommon implements ObjectSave {
 
     belongsToGroup: NodeGroup | null = null;
 
+    // Need for group compact mode
+    groupCompactBelongsToGroupCache: NodeGroup | null = null;
+    
     /**
      * You can specify the initial position of node.
      * VISUAL GRAPH FEATURE
@@ -50,6 +53,9 @@ export default abstract class NodeCommon implements ObjectSave {
      */
     parent: Node = null;
 
+    groupCompactParent: NodeGroup = null;
+    groupCompactChildren: NodeCommon[] = [];
+    
     /**
      * Node's children
      */

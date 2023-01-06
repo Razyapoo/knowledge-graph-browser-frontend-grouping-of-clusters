@@ -88,12 +88,12 @@
             :mode-compact="modeCompact"
 		/>
 		<graph-element-edge
-				v-for="edge in groupEdges"
-				v-if="edge.source.mounted && edge.target.mounted"
-				:key="edge.identifier.replace(/\./, '_')"
-				:edge="edge"
-				:explicitly-active="!isNodeSelected"
-				:mode-compact="modeCompact"
+			v-for="edge in groupEdges"
+			v-if="edge.source.mounted && edge.target.mounted"
+			:key="edge.identifier.replace(/\./, '_')"
+			:edge="edge"
+			:explicitly-active="!isNodeSelected"
+			:mode-compact="modeCompact"
 		/>
 	</div>
 </template>
@@ -121,6 +121,8 @@ import GraphElementNodeGroup from "./GraphElementNodeGroup.vue";
 import GroupEdge from "../../graph/GroupEdge";
 import NodeCommon from "../../graph/NodeCommon";
 import EdgeCommon from "../../graph/EdgeCommon";
+import NodeGroup from "@/graph/NodeGroup";
+import Vue from "vue";
 
 const WHEEL_SENSITIVITY = 0.2;
 
@@ -147,7 +149,9 @@ export default class GraphArea extends Mixins(GraphAreaStylesheetMixin) {
 	 * Compact mode is a mode where selected nodes with all its neighbours are layouted independently of others
 	 * */
 	@Prop(Boolean) private modeCompact !: boolean;
+	@Prop(Boolean) private groupModeCompact !: boolean;
 
+	groupCompactNodesBuffer: NodeCommon[] = [];
 	/**
 	 * How much of the graph area is covered by panels. This array is readonly so it could be passed by reference.
 	 * top, right, bottom, left
@@ -287,11 +291,16 @@ export default class GraphArea extends Mixins(GraphAreaStylesheetMixin) {
 		this.cy.userPanningEnabled(!this.modeCompact);
 		this.cy.userZoomingEnabled(!this.modeCompact);
 		this.cy.boxSelectionEnabled(!this.modeCompact);
+
+		if (!this.modeCompact) {
+			let rootGroups = this.graph.groups.filter(group => !group.groupCompactParent && (group.groupCompactChildren.length > 0));
+			rootGroups.forEach(group => this.compactUnlockRecursively(group));
+		}
 	}
 
     @Watch('dataForCompactMode')
     private dataForCompactModeChanged() {
-	    let [nodes, edges] = this.dataForCompactMode;
+		let [nodes, edges] = this.dataForCompactMode;
 
 	    if (nodes && !nodes.length) {
 	    	this.compactModeChange(false);
@@ -318,17 +327,100 @@ export default class GraphArea extends Mixins(GraphAreaStylesheetMixin) {
      * */
     private get dataForCompactMode(): [NodeCommon[], EdgeCommon[]] {
 	    if (this.modeCompact) {
-	        let nodes: NodeCommon[] = this.graph.nodesVisual.filter(node => (node.selected || node.neighbourSelected) && node.element);
-	        let edges: EdgeCommon[] = this.graph.edgesVisual.filter(edge => (edge.source.selected || edge.target.selected) && edge.element);
 
-            return [nodes, edges];
-        } else {
-	        return [null, null];
+	        // let nodes: NodeCommon[] = this.graph.nodesVisual.filter(node => (node.selected || node.neighbourSelected) && node.element);
+	        // // let nodes: NodeCommon[] = this.graph.nodesVisual.filter(node => (node.selected) && node.element);
+
+	        // let edges: EdgeCommon[] = this.graph.edgesVisual.filter(edge => (edge.source.selected || edge.target.selected) && edge.element);
+			
+			
+			// if (this.layoutManager.currentLayout.supportsHierarchicalView && this.layoutManager.currentLayout.constraintRulesLoaded) {
+			// 	// let nodesForCompact: NodeCommon[] = [];
+			// 	let addChildrenRecursively = function(node: NodeCommon) {
+			// 		if (node.children?.length > 0) {
+			// 			node.children.forEach(child => {
+			// 				if (child.mounted && !child.isUnmountedAndHiddenInHierarchy) {
+			// 					if (!nodes.find(nd => nd == child)) nodes.push(child);
+			// 					addChildrenRecursively(child);
+			// 				}
+			// 			});
+			// 		} 
+			// 	}
+						
+			// 	nodes.forEach(node => addChildrenRecursively(node));
+			// }
+
+			// return [nodes, edges];
+			
+			let groups: NodeGroup[] = this.graph.groups.filter(group => (group.selected) && group.element);
+			if (groups.length > 0) {
+				let nodes: NodeCommon[] = [];
+				groups.forEach(group => {
+					if (group.groupCompactParent)  {
+						group.groupCompactParent.groupCompactChildren.forEach(innerGroup => {
+							if (innerGroup != group && innerGroup instanceof NodeGroup) this.compactUnlockRecursively(innerGroup);
+						})
+					}
+					if (group.groupCompactChildren.length > 0) {
+						group.groupCompactChildren.forEach(child =>{
+							if (child instanceof NodeGroup) this.compactUnlockRecursively(child);	
+						})
+					} else {
+						group.nodes.forEach(node => { 
+							// this.groupCompactNodesBuffer.push(node); 
+							group.groupCompactChildren.push(node);
+							nodes.push(node); 
+							node.mounted = true; 
+							node.groupCompactBelongsToGroupCache = node.belongsToGroup; 
+							node.belongsToGroup = null;
+						});
+					}
+
+					// Make a group as new "pseudo-parent", trick here is that after degroup, node will be mounted 
+					// and registered again with correct parent, because it will inherit parent from group
+					Vue.nextTick(() => {
+						for (let child of group.nodes) {
+							if (child.element) {
+								// we can safely set new parent (group) both for element and for object
+								let parent = this.areaManipulator.cy.getElementById(group.identifier).id();
+								this.areaManipulator.cy.getElementById(child.identifier).move({
+									parent: parent
+								});
+								child.groupCompactParent = group;
+							}
+						}
+					});
+				})
+	
+				this.areaManipulator.layoutManager.currentLayout.onGroupChangedCompact();
+	
+				return [[...nodes, ...groups], null];
+			}
         }
+
+		return [null, null];
+
     }
 
+	// Collapse all "pseudo-child" of group again into group
+	private compactUnlockRecursively(group: NodeGroup) {
+		if (group.groupCompactChildren.length > 0) {
+			group.groupCompactChildren.forEach(child => {
+				if (child instanceof NodeGroup) this.compactUnlockRecursively(child);
+				child.belongsToGroup = child.groupCompactBelongsToGroupCache;
+				child.groupCompactBelongsToGroupCache = null;
+				child.groupCompactParent = null;
+				child.selected = false;
+				if (child instanceof NodeGroup) child.mounted = false;
+			})
+			group.groupCompactChildren = [];
+		}
+	}
+	
     @Emit()
-	private compactModeChange(val: boolean) { return val; }
+	private compactModeChange(val: boolean) { 
+		return val; 
+	}
 
 	/**
 	 * Computes whether there is at least one node in the graph which is selected and visible.

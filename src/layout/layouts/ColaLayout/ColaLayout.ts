@@ -43,7 +43,6 @@ export default class ColaLayout extends Layout {
 
     private layoutAnimation: Layouts;
     private isActive: boolean = false;
-
     /**
      * Options for this layout which can be modified by a user
      */
@@ -85,7 +84,7 @@ export default class ColaLayout extends Layout {
      * @param nodes nodes to position
      * @param position parent node position
      */
-    private circleLayout(nodes: Node[], position: Position) {
+    private circleLayout(nodes: NodeCommon[], position: Position, groupCompactMode: boolean) {
         const distance = 100; // Minimal distance between nodes in px, ignoring bounding boxes
 
         let circNum = 0; // Actual circle number
@@ -103,14 +102,13 @@ export default class ColaLayout extends Layout {
                 position.x + distance * circNum * Math.cos(2*Math.PI*phi/circumference),
                 position.y + distance * circNum * Math.sin(2*Math.PI*phi/circumference)
             ];
-            if (!node.belongsToGroup) node.mounted = true;
+            if (!node.belongsToGroup || groupCompactMode) node.mounted = true;
 
             phi++; i++;
         }
     }
 
     async onExpansion(expansion: Expansion) {
-
         // First step, mount and position the nodes which are not mounted yet
         let notMountedNodes = expansion.nodes.filter(node => !node.mounted);
         if (this.constraintRulesLoaded && this.areaManipulator.hierarchicalGroups.length > 0) notMountedNodes = notMountedNodes.filter(node => !node.isUnmountedAndHiddenInHierarchy);
@@ -223,7 +221,7 @@ export default class ColaLayout extends Layout {
                 groupNotMountedNodes(notMountedNodes);
             }
         } else {
-            this.circleLayout(notMountedNodes, currentPosition);
+            this.circleLayout(notMountedNodes, currentPosition, false);
         }
 
         // Wait for nodes to mount
@@ -247,13 +245,19 @@ export default class ColaLayout extends Layout {
         this.executeLayout(this.areaManipulator.cy.elements(), explicitlyFixed);
     }
 
-    async onGroupBroken(nodes: Node[], group: NodeGroup) {
+    async onGroupBroken(nodes: NodeCommon[], group: NodeGroup) {
         super.onGroupBroken(nodes, group);
-        this.circleLayout(nodes, group.element?.element?.position() ?? this.areaManipulator.getCenterPosition());
+        this.circleLayout(nodes, group.element?.element?.position() ?? this.areaManipulator.getCenterPosition(), false);
 
         // Wait for nodes to mount
         await Vue.nextTick();
         if (!this.isActive) return;
+
+        this.executeLayout(this.areaManipulator.cy.elements());
+    }
+
+    async onGroupChangedCompact() {
+        await Vue.nextTick();
 
         this.executeLayout(this.areaManipulator.cy.elements());
     }
@@ -284,17 +288,19 @@ export default class ColaLayout extends Layout {
                 this.setAreaForCompact(true);
             }
             this.compactMode = this.areaManipulator.cy.collection();
+            
+            Vue.nextTick(() => {
+                for (let node of nodes) {
+                    this.compactMode = this.compactMode.union(node.element?.element);
+                }
 
-            for (let node of nodes) {
-                this.compactMode = this.compactMode.union(node.element.element);
-            }
+                // for (let edge of edges) {
+                //     this.compactMode = this.compactMode.union(edge.element?.element);
+                // }
 
-            for (let edge of edges) {
-                this.compactMode = this.compactMode.union(edge.element.element);
-            }
-
-            // Run layout
-            this.executeLayout(this.getCollectionToAnimate());
+                // Run layout
+                this.executeLayout(this.getCollectionToAnimate());
+            })
         }
     }
 

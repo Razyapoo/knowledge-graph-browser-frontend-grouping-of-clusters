@@ -109,12 +109,12 @@ export default class GraphAreaManipulator implements ObjectSave {
 
     }
 
-    private addNodeAndItsChildrenRecursively(node: NodeCommon) {
+    private addChildrenRecursively(node: NodeCommon) {
         if ((node instanceof Node) && node.children?.length > 0) {
             node.children.forEach(child => {
                 if (child.mounted) {
                     if (!this.nodesToCluster?.find(nd => nd == child)) this.nodesToCluster.push(child);
-                    this.addNodeAndItsChildrenRecursively(child);
+                    this.addChildrenRecursively(child);
                 }
             });
         }
@@ -134,6 +134,8 @@ export default class GraphAreaManipulator implements ObjectSave {
 		let parent: any;
         let ungroupRandomly: boolean = false;
         
+        // useful when local and global zoom 
+        // let selectedBool = false
         this.globalHierarchicalDepth = undefined; 
 
         
@@ -152,6 +154,7 @@ export default class GraphAreaManipulator implements ObjectSave {
             if (this.globalHierarchicalDepth === Number.MIN_SAFE_INTEGER) {
                 return;
             }
+            // }
             this.groupingOfClusters.manipulator = this.graphArea.manipulator;
 
             // First, sort nodes by hierarchical class that are allowed to be clustered and 
@@ -384,10 +387,8 @@ export default class GraphAreaManipulator implements ObjectSave {
                         }
                         
                     }
-
                     Vue.nextTick(() => this.layoutManager?.currentLayout?.run());
                 }
-
             }
         }
 	}
@@ -402,7 +403,7 @@ export default class GraphAreaManipulator implements ObjectSave {
                         // selectedBool = true
                         this.nodesToCluster = []
                         if (zoomIn) this.nodesToCluster.push(node);
-                        this.addNodeAndItsChildrenRecursively(node);
+                        this.addChildrenRecursively(node);
                         this.groupingOfClustersManager(zoomIn);
                     }
                 });
@@ -489,7 +490,7 @@ export default class GraphAreaManipulator implements ObjectSave {
         } else {
             collection = this.cy.collection();
             for (let node of nodes) {
-                collection.merge(node.selfOrGroup.element.element);
+                collection.merge(node.selfOrGroup.element?.element);
             }
         }
 

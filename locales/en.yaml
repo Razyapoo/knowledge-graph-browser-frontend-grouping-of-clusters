@@ -53,7 +53,9 @@ side_panel:
     title: Hidden nodes
     description: This panel shows nodes currently not visible in the graph. If the node is hidden by a user, red eye icon is shown. By clicking on the eye, you can change its user visibility. If the node is hidden by a filter, the filter icon is shown.
   node_group:
-    title: Group of single nodes | Group of {n} nodes
+    title: Group of single nodes | Group of {n} resources
+    detail: 'Total number of all nodes: {n}'
+    detail_hint: The number of all end nodes in all (sub)groups, i.e (sub)groups itself are not counted
 
   # Component for showing a list of nodes in a group
   node_grouped_list:
@@ -85,6 +87,8 @@ side_panel:
   unlock_for_layouts_desc: Unlock node's position so it can be layouted
   break_group: Break
   break_group_desc: Breaks the group so all nodes from the group become visible in the graph
+  rename_group: Rename
+  rename_group_desc: Set a new name for the group
   group: Group
   group_desc: Replaces all the nodes with a single node
   remove: Remove
@@ -96,6 +100,11 @@ side_panel:
   leave: Leave group
   leave_desc: This separates the node from its group and shows it in the graph.
 
+rename_group_dialog:
+  title: Rename a node
+  input: New name 
+  cancel: Cancel
+  rename: Rename
 
 # Dialog to add new nodes
 add_node_dialog:

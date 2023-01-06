@@ -63,7 +63,9 @@ side_panel:
       vypnutou viditelnost, je u něj zobrazená ikonka oka. Na tuto ikonku je
       možné kliknout pro změnu viditelnosti.
   node_group:
-    title: 'Skupina obsahující jeden uzel | Skupina {n} uzlů'
+    title: 'Skupina obsahující jeden uzel | Skupina {n} vrcholů'
+    detail: 'Celkový počet uzlů: {n}'
+    detail_hint: Počet všech koncových uzlů ve všech (pod)skupinách, tj. (pod)skupiny samotné se nepočítají
   node_grouped_list:
     number_items: '1 vrchol | {n} vrcholy | {n} vrcholů'
     no_nodes: Žádné uzly k zobrazení
@@ -92,6 +94,8 @@ side_panel:
   unlock_for_layouts_desc: Odemkne pozici uzlu vůči layotu | Odemkne pozici uzlů vůči layotu
   break_group: Rozbít
   break_group_desc: 'Rozbije skupinu, takže všechny uzly skupiny budou samostatné'
+  rename_group: Přejmenovat
+  rename_group_desc: Přejmenovat skupinu
   group: Seskupit
   group_desc: 'Nahradí všechny uzly jedním uzlem, který je seskupuje'
   remove: Smazat
@@ -104,6 +108,11 @@ side_panel:
     všechny uzly byly viditelné na obrazovce
   leave: Opustit skupinu
   leave_desc: Oddělí uzel ze skupiny a zobrazí ho v grafu
+rename_group_dialog:
+  title: Přejmenování uzlu
+  input: Nové jméno 
+  cancel: Zrušit
+  rename: Přejmenovat
 add_node_dialog:
   title: Přidání nových vrcholů
   cancel: Zrušit

@@ -34,7 +34,6 @@ export default class GraphElementEdge extends Vue {
     mounted() {
         // @ts-ignore
         this.cy = this.$parent.cy;
-        // if (!(this.edge.target.hierarchicalClass === this.edge.source.hierarchicalClass) || this.edge.target.hierarchicalClass === undefined || this.edge.target.hierarchicalClass === undefined) {
         if (!(this.edge.target.parent?.identifier === this.edge.source.identifier) && !(this.edge.source.parent?.identifier === this.edge.target.identifier)) {
             this.element = <Cytoscape.EdgeSingular>this.cy.add({
                 // @ts-ignore bad types
@@ -91,7 +90,7 @@ export default class GraphElementEdge extends Vue {
 
     @Watch('compactModeLocked')
     private compactModeLockedChanged() {
-        this.element.toggleClass("__compact_inactive", this.compactModeLocked);
+        this.element?.toggleClass("__compact_inactive", this.compactModeLocked);
     }
 
     @Watch('edge.classes', {deep: true})

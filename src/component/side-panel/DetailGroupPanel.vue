@@ -2,7 +2,8 @@
     <panel-template>
         <div class="mb-5">
             <h1 class="mb-5 d-inline">{{ $tc("side_panel.node_group.title", node.nodes.length) }}</h1>
-            <v-chip label v-for="cls in previewClasses" :key="cls.label" :color="cls.color" style="vertical-align: super;" class="mx-2">{{cls.label}}</v-chip>
+            <v-chip label v-for="cls in previewClasses" :key="cls.label" :color="cls.color" style="vertical-align: super;" class="mx-2">{{cls.label}}</v-chip><br/>
+            <p :title="$t('side_panel.node_group.detail_hint')" class="mb-5 d-inline">{{ $tc("side_panel.node_group.detail", node.leafNodes.length) }}</p>
         </div>
 
         <v-alert v-if="node.belongsToGroup && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView" type="info" color="secondary" dense text>{{ $tc("side_panel.detail_panel.part_of_group", node.belongsToGroup.nodes.length) }} <v-btn small text color="primary" @click="node.belongsToGroup.selectExclusively()">{{ $tc("side_panel.detail_panel.go_to_group") }}</v-btn></v-alert>
@@ -44,19 +45,30 @@
                     :help="$tc('side_panel.' + (node.lockedForLayouts ? 'unlock' : 'lock') + '_for_layouts_desc', 1)"
             />
             <panel-action-button
-                    :width="1"
                     v-if="node.belongsToGroup && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView"
                     @click="manipulator.leaveGroup([node], node.belongsToGroup)"
                     :icon="icons.leave"
                     :text="$tc('side_panel.leave', 1)"
                     :help="$tc('side_panel.leave_desc', 1)"
             />
+            <panel-action-button
+                    @click="$refs.renameNode.show()"
+                    :icon="icons.rename"
+                    :text="$tc('side_panel.rename_group', 1)"
+                    :help="$tc('side_panel.rename_group_desc', 1)"
+            />
+            <group-rename-dialog
+                ref="renameNode"
+                :group="node"
+            />
         </template>
     </panel-template>
+
 </template>
 <script lang="ts">
 import {Component, Mixins, Prop} from 'vue-property-decorator';
 import { Node, NodeType } from '../../graph/Node';
+import GroupRenameDialog from '@/component/side-panel/components/GroupRenameDialog.vue'
 
 import {
     mdiTrashCanOutline,
@@ -66,8 +78,10 @@ import {
     mdiPinOutline,
     mdiHammer,
     mdiCrosshairsGps,
-    mdiApplicationExport
+    mdiApplicationExport,
+    mdiRenameBox
 } from '@mdi/js';
+
 import NodeGroupedList from "./components/NodeGroupedList.vue";
 import GraphManipulator from "../../graph/GraphManipulator";
 import GraphAreaManipulator from "../../graph/GraphAreaManipulator";
@@ -83,7 +97,7 @@ interface NodeTypeGroup {
 }
 
 @Component({
-    components: {PanelActionButton, PanelTemplate, NodeGroupedList}
+    components: {GroupRenameDialog, PanelActionButton, PanelTemplate, NodeGroupedList}
 })
 export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
     @Prop() node: NodeGroup;
@@ -98,6 +112,7 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
         break: mdiHammer,
         locate: mdiCrosshairsGps,
         leave: mdiApplicationExport,
+        rename: mdiRenameBox,
     }
 
     removeNode() {

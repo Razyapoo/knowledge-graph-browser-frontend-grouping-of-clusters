@@ -57,6 +57,8 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
     /** List of all nodes located in this group (considering group hierarchy). Needed for dynamic groupEdge creation. */
     leafNodes: Node[] = [];
 
+    name: string = "";
+
     /** Classes of nodes different from hierarchical class. Needed for clustering */
     private classesOfNodes: string[] = [];
 
@@ -210,7 +212,6 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
             if (!sourceNode.isVisible) continue;
 
             // *For every edge (and therefore neighbour) of the node*
-
             for (let edge of sourceNode.edges) {
 
                 let targetNode: NodeCommon;
@@ -362,6 +363,21 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
         return mostFrequent;
     }
 
+    public get listOfNodesAsTitle() {
+        let labelConcat = "";
+        this.leafNodes.forEach(node => {
+            labelConcat = labelConcat + node.currentView.preview.label + ", "; 
+        })
+        labelConcat = labelConcat.slice(0, labelConcat.length - 2);
+
+        return labelConcat;
+    }
+
+    get getName() {
+        
+        if (this.name == "") return "(" + this.leafNodes.length + ") " + this.mostFrequentType.label;
+        else return "(" + this.leafNodes.length + ") " + this.name;
+    }
     /**
      * Returns all visible `GroupEdge` associated with this `NodeGroup` **except** those having as a source other
      * `NodeGroup` to avoid duplicity. These edges are used to draw edges from and to grouped nodes in the graph.

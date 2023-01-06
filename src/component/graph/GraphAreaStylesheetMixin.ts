@@ -3,6 +3,10 @@ import {ResponseStylesheet} from "../../remote-server/ResponseInterfaces";
 import ViewOptions from "../../graph/ViewOptions";
 import clone from "clone";
 import cytoscape from "cytoscape";
+import { mdiCircle } from "@mdi/js";
+import CircleLayout from "@/layout/layouts/CircleLayout/CircleLayout";
+import { wrap } from "module";
+import { relative } from "path";
 
 /**
  * This mixin is responsible for styling a Cytoscape graph. Its input is a stylesheet for a Cytoscape instance and
@@ -34,6 +38,18 @@ export default class GraphAreaStylesheetMixin extends Vue {
      */
     private get remappedUserStylesheet(): cytoscape.StylesheetStyle[] {
         return this.stylesheet.styles.map(style => {return {selector: style.selector, style: clone(style.properties)}});
+    }
+
+    private renderNode(node) {
+        // const fontFamily = '"Lucida Grande", Times'
+        const width = node.style('width');
+        const height = node.style('height');
+        const svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="78%" cy="60%" r="5%" fill="#000000" fill-opacity="60%"></circle>
+        <circle cx="88%" cy="60%" r="4%" fill="#000000" fill-opacity="60%"></circle>
+        <circle cx="78%" cy="85%" r="4%" fill="#000000" fill-opacity="60%"></circle>
+        </svg>`;
+        return 'data:image/svg+xml;base64,' + btoa(svg);
     }
 
     private get defaultStyles(): cytoscape.StylesheetStyle[] {
@@ -123,6 +139,7 @@ export default class GraphAreaStylesheetMixin extends Vue {
             {
                 selector: "*",
                 style: {
+                    "min-zoomed-font-size": 10,
                     "opacity": 0.9,
                     "transition-property": "opacity",
                     "transition-duration": "0.25s",
@@ -130,9 +147,17 @@ export default class GraphAreaStylesheetMixin extends Vue {
             },
 
             {
+                selector: ".__nested_node",
+                style: {
+                    "background-image": (node) => this.renderNode(node),
+                }
+            },
+
+            {
                 selector: "*.__active",
                 style: {
-                    "opacity": 1
+                    "opacity": 1,
+                    position: "absolute",
                 }
             },
 
@@ -150,14 +175,15 @@ export default class GraphAreaStylesheetMixin extends Vue {
                 }
             },
 
-            {
-                selector: ".__compact_inactive",
-                style: {
-                    opacity: 0.05,
-                    events: "no",
-                    "z-index": 0,
-                }
-            },
+            // {
+            //     selector: ".__compact_inactive",
+            //     style: {
+            //         opacity: 0.05,
+            //         events: "no",
+            //         "z-index": 0,
+            //         position: "relative",
+            //     }
+            // },
 
             {
                 selector: ".__node_group",
@@ -166,6 +192,10 @@ export default class GraphAreaStylesheetMixin extends Vue {
                     "ghost-offset-x": 5,
                     "ghost-offset-y": -5,
                     "ghost-opacity": 1,
+                    "display": "block",
+                    "text-wrap": "ellipsis",
+                    "text-overflow-wrap": "anywhere",
+                    "text-max-width": 100,
                     "shape": "octagon",
                 }
             },
@@ -174,7 +204,7 @@ export default class GraphAreaStylesheetMixin extends Vue {
                 selector: "node:selected",
                 style: {
                     "overlay-color": "#000000",
-                    "overlay-opacity": 0.2,
+                    "overlay-opacity": 0.2, 
                 }
             },
             
@@ -187,6 +217,9 @@ export default class GraphAreaStylesheetMixin extends Vue {
                     "shape": "cut-rectangle", //change shape of parent's node
                 }
             },
+
+            
+
             ...this.viewOptionsStyles,
         ];
     }

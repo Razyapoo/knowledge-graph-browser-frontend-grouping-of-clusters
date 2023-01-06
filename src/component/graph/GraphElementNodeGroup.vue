@@ -114,7 +114,9 @@ export default class GraphElementNodeGroup extends Mixins(GraphElementNodeMixin)
     }
 
     private get label(): string {
-        if (this.areaManipulator.layoutManager?.currentLayout?.constraintRulesLoaded) return <string>this.node?.mostFrequentType?.label + " (" + this.node.nodes.length + ")" ;
+        
+        if (this.areaManipulator.layoutManager?.currentLayout?.constraintRulesLoaded) return this.node.getName ;
+        // if (this.areaManipulator.layoutManager?.currentLayout?.constraintRulesLoaded) return (this.node.name != "") ? this.node.name : <string>this.node.mostFrequentType?.label + " (" + this.node.leafNodes.length + ")" ;
         return <string>this.$tc('graph.groupNode', this.node.nodes.length);
     }
 
