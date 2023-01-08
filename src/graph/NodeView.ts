@@ -185,6 +185,13 @@ export class NodeView implements ObjectSave {
                     }
                 }
                 if (found) {
+                    // if (!source.mounted || !target.mounted) {
+                    // if (this.node == target && this.node.children.length > 0 && this.node.children[0].isUnmountedAndHiddenInHierarchy && !this.node.children[0].mounted) {
+                    //     alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
+                    //     this.expansionInProgress = false;
+                    //     return new Expansion(this.node);
+                    // }
+                    
                     if (target.children.length > 0 && target.children[0].isUnmountedAndHiddenInHierarchy && !target.children[0].mounted) {
                         alert("This node has already collapsed some or all of its child nodes. Please open/show them first and then try to expand its neighborhood again.");
                         this.expansionInProgress = false;

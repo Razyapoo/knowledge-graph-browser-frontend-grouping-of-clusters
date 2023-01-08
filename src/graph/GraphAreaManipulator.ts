@@ -15,6 +15,8 @@ import { Edge } from "./Edge";
 import Vue from "vue";
 import GroupEdge from "./GroupEdge";
 import EdgeCommon from "./EdgeCommon";
+import GraphElementNodeMixin from "@/component/graph/GraphElementNodeMixin";
+import clone from "clone";
 
 /**
  * This class performs basic operations with graph area like zooming, animations etc.
@@ -94,9 +96,6 @@ export default class GraphAreaManipulator implements ObjectSave {
             isBeingDragged = false;
         });
         
-        /** easy counter to change sensitivity of "grouping of clusters" event. Run once in 5 wheel rotations */
-        let count_in = 0;
-        let count_out = 0;
         window.addEventListener('wheel', e => {
             if (this.isGlobalGroupingOfClustersChecked || this.isLocalGroupingOfClustersChecked) {
                 if (e.deltaY < 0) {
@@ -120,6 +119,16 @@ export default class GraphAreaManipulator implements ObjectSave {
         }
     }
 
+    // private getMountedGroups(): NodeGroup[] {
+    //     let mountedGroups: NodeGroup[];
+    //     for (let node of this.nodesToCluster) {
+    //         if ((node instanceof NodeGroup) && node.mounted) {
+    //             mountedGroups.push(node);
+    //         } 
+    //     }
+    //     return mountedGroups
+    // }
+
     /**
      * Main clustering function
      * For more information, see https://github.com/Razyapoo/KGBClusteringDocumentation/blob/main/technical_documentation.md#extension-of-the-graphareamanipulatorts
@@ -138,13 +147,30 @@ export default class GraphAreaManipulator implements ObjectSave {
         // let selectedBool = false
         this.globalHierarchicalDepth = undefined; 
 
+        // this.nodesToCluster = []
         
         if (zoomIn === undefined) {
             return;
         }
         
+        // if local zoom
+        // if (this.isLocalGroupingOfClustersChecked) {
+        //     this.graph.nocache_nodesVisual.forEach(node => {
+        //         if (node.selected) {
+        //             selectedBool = true
+        //             this.addChildrenRecursively(node);
+        //             if (zoomIn) this.nodesToCluster.push(node);
+        //         }
+        //     });
+        // }
+
+        // if (this.nodesToCluster?.length == 0 && !selectedBool && this.isGlobalGroupingOfClustersChecked) this.nodesToCluster = this.graph.nocache_nodesVisual;
+        //  end if local zoom
+
+        
         // Zooming out
         if (!zoomIn) {
+            // if (this.globalHierarchicalDepth == undefined) {
             // Controls both: simple zooming out and when some intermediate level is skipped (deleted)
             this.globalHierarchicalDepth = Number.MIN_SAFE_INTEGER;
             for (let node of this.nodesToCluster) {
@@ -152,6 +178,7 @@ export default class GraphAreaManipulator implements ObjectSave {
                 if (this.globalHierarchicalDepth < node.hierarchicalLevel) this.globalHierarchicalDepth = node.hierarchicalLevel;
             }
             if (this.globalHierarchicalDepth === Number.MIN_SAFE_INTEGER) {
+                // this.globalHierarchicalDepth = undefined; 
                 return;
             }
             // }
@@ -169,6 +196,15 @@ export default class GraphAreaManipulator implements ObjectSave {
                     
                 });
 
+                // if nodes having intermediate level are removed
+                // the algorithm searches for next level of nodes shown on the graph
+                // let new_hierarchical_level = Number.MIN_SAFE_INTEGER;
+                // for (let node of this.graph.nocache_nodesVisual) {
+                //     if ((node.parent?.identifier.startsWith("pseudo_parent") && node.parent?.children.length <= 1) || node.identifier.startsWith("pseudo_parent")) continue;
+                //     if (new_hierarchical_level < node.hierarchicalLevel && node.hierarchicalLevel <= this.globalHierarchicalDepth) new_hierarchical_level = node.hierarchicalLevel;
+                // }
+                // if (new_hierarchical_level !== Number.MIN_SAFE_INTEGER) this.globalHierarchicalDepth = new_hierarchical_level;
+                
                 nodesToClusterByGroup.forEach(node => {
                     if (node.hierarchicalLevel === this.globalHierarchicalDepth) {
                         nodesToClusterByLevel.push(node);
@@ -191,12 +227,14 @@ export default class GraphAreaManipulator implements ObjectSave {
                 
                 if (parent) {
                     parent.children.forEach(child => {
+                        // if (this.nodesToCluster.find(node => node == child)) {
                         nodesToClusterByParent.push(child); 
                         // nodes in nodesToClusterByParent list are getting to be clustered 
                         // so we can delete them from common list of nodes to be clustered
                         nodesToClusterByLevel.splice(
                             nodesToClusterByLevel.indexOf(child), 1
                         );
+                        // }
                     });
                 }
                 else {
@@ -277,6 +315,7 @@ export default class GraphAreaManipulator implements ObjectSave {
             // move all their edges to parent node.
             if (numberOfNodesPerLevel === groupOrNodeIsOnlyChild.length){
                 groupOrNodeIsOnlyChild.forEach(node => {
+                    // this.globalHierarchicalDepth = node.hierarchicalLevel - 1;
                     node.mounted = false;
                     node.isUnmountedAndHiddenInHierarchy = true;
                     node.selected = false;
@@ -284,7 +323,14 @@ export default class GraphAreaManipulator implements ObjectSave {
                     let nodeEdgesOut: Edge[] = [];
                     let newEdge: EdgeCommon;
                     let allEdges: NodeInAndOutEdges;
+                    // node.parent.hasChildrenUnmountedAndHiddenInHierarchy = true;
                     if (node instanceof NodeGroup) {
+                        // for (let nodeInGroup of node.nodes) {
+                        //     nodeInGroup.edges.forEach(edge => {
+                        //         if (nodeInGroup.identifier === edge.source.identifier) nodeEdgesOut.push(edge);
+                        //         else if (nodeInGroup.identifier === edge.target.identifier) nodeEdgesIn.push(edge);
+                        //     })
+                        // }
                         allEdges = node.getAllEdgesFromAllNonGroupNodes;
                         nodeEdgesOut = allEdges.outEdges;
                         nodeEdgesIn = allEdges.inEdges;
@@ -294,6 +340,7 @@ export default class GraphAreaManipulator implements ObjectSave {
                             else if (node.identifier === edge.target.identifier) nodeEdgesIn.push(edge);
                         })
                     }
+                    // let temp = allEdges.filter(edge => edge.classes[0] == "broader")
                     
                     for (let nodeEdge of nodeEdgesOut) {
                         if (!(node.parent === nodeEdge.target) && !(node.parent.edges.find(parentEdge => parentEdge.target === nodeEdge.target))) {
@@ -318,6 +365,8 @@ export default class GraphAreaManipulator implements ObjectSave {
                             newEdge.classes = nodeEdge.classes;
                         }
                     }
+                    
+                    // node.parent.element?.element.addClass("__nested_node");
                 });
             }
 
@@ -327,17 +376,21 @@ export default class GraphAreaManipulator implements ObjectSave {
             nodesToClusterByParent = [];
             nodesToClusterByGroup = [];
             numberOfNodesPerLevel = 0;
+            // this.globalHierarchicalDepth = undefined;
 
         } else if (zoomIn) {
             // Zooming in
             this.nodesToCluster = this.nodesToCluster.filter(node => node.mounted && ((node instanceof NodeGroup) || (node.children.length > 0 && node.children[0].isUnmountedAndHiddenInHierarchy)))
 
+            // if (this.globalHierarchicalDepth == undefined) {
             // Controls both: simple zooming out and when some intermediate level is skipped (deleted)
             this.globalHierarchicalDepth = Number.MAX_SAFE_INTEGER;
             for (let node of this.nodesToCluster) {
+                // if ((!zoomIn && (node.parent?.identifier.startsWith("pseudo_parent") && node.parent?.children.length <= 1)) || node.identifier.startsWith("pseudo_parent")) continue;
                 if (this.globalHierarchicalDepth > node.hierarchicalLevel) this.globalHierarchicalDepth = node.hierarchicalLevel;
             }
             if (this.globalHierarchicalDepth === Number.MAX_SAFE_INTEGER) {
+                // this.globalHierarchicalDepth = undefined; 
                 return;
             }
             // }
@@ -370,6 +423,7 @@ export default class GraphAreaManipulator implements ObjectSave {
                     if (group instanceof NodeGroup) this.graphArea.manipulator.deGroup(group);
                 });
 
+                // this.globalHierarchicalDepth = undefined;
             } else {
                 // Show collapsed child nodes
                 let unmountedNodesInHierarchy: NodeCommon[] = this.graph.nocache_nodesHiddenInHierarchy?.filter(node => (node.parent?.mounted && (node.hierarchicalLevel === this.globalHierarchicalDepth + 1) && this.nodesToCluster.find(nd => nd == node.parent)) || node.parent?.selected);
@@ -378,21 +432,48 @@ export default class GraphAreaManipulator implements ObjectSave {
                     for (let unmountedNode of unmountedNodesInHierarchy) {
                         if (!unmountedNode.mounted) {
                             unmountedNode.mounted = true;
+                            // this.globalHierarchicalDepth = unmountedNode.hierarchicalLevel;
                             parentNode = unmountedNode.parent;
                             unmountedNode.isUnmountedAndHiddenInHierarchy = false;
                             let edgesToRemove = parentNode.edges.filter(edge => edge.isEdgeFromChild);
                             if (edgesToRemove.length > 0) {
                                 for (let edgeToRemove of edgesToRemove) this.graph._removeEdge(edgeToRemove);
                             }
+                            // parentNode.element?.element.removeClass("__nested_node");
+                            // parentNode.hasChildrenUnmountedAndHiddenInHierarchy = false;
                         }
                         
                     }
+                    // this.globalHierarchicalDepth = undefined;
                     Vue.nextTick(() => this.layoutManager?.currentLayout?.run());
                 }
+                // else {
+                //     // if nodes having intermediate level are removed
+                //     // the algorithm searches for next level of nodes shown on the graph
+                //     let new_hierarchical_level = Number.MAX_SAFE_INTEGER;
+                //     for (let node of this.nodesToCluster) {
+                //         // if (node.parent?.identifier.startsWith("pseudo_parent") && node.parent?.children.length <= 1) continue;
+                //         if (new_hierarchical_level > node.hierarchicalLevel && node.hierarchicalLevel > this.globalHierarchicalDepth) new_hierarchical_level = node.hierarchicalLevel;
+                //     }
+                //     if (new_hierarchical_level !== Number.MAX_SAFE_INTEGER) {
+                //         this.globalHierarchicalDepth = new_hierarchical_level;
+                //         this.groupingOfClustersManager(true);
+                //     }
+                //     this.globalHierarchicalDepth = undefined
+                // }
             }
         }
 	}
     
+    /** returns unmounted nodes and groups */
+    // private get getNodesUnmounted(): NodeCommon[] {
+    //     let unmountedNodes: NodeCommon[] = [];
+    //     for (let node of this.nodesToCluster) {
+    //         if (!node.mounted) unmountedNodes.push(node);
+    //     }
+    //     return unmountedNodes;
+    // }
+
 
     private checkboxHelper(zoomIn) {
         let nodesToClusterLocal: NodeCommon[] = [];

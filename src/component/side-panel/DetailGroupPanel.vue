@@ -7,10 +7,15 @@
         </div>
 
         <v-alert v-if="node.belongsToGroup && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView" type="info" color="secondary" dense text>{{ $tc("side_panel.detail_panel.part_of_group", node.belongsToGroup.nodes.length) }} <v-btn small text color="primary" @click="node.belongsToGroup.selectExclusively()">{{ $tc("side_panel.detail_panel.go_to_group") }}</v-btn></v-alert>
+        <v-alert v-if="node.parent && node.isUnmountedAndHiddenInHierarchy && areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView" type="info" color="secondary" dense text>{{ $tc("side_panel.detail_panel.group_parent_node") }} <v-btn small text color="primary" @click="node.parent.selectExclusively()">{{ $tc("side_panel.detail_panel.go_to_parent") }}</v-btn></v-alert>
         
+        <v-card v-if="isGroupCompactModeActive" outlined class="mb-5">
+            <v-card-text>{{ $tc('group_compact.enabled') }}</v-card-text>
+        </v-card>
+
         <node-grouped-list delete-button break-group-button split-group-button :manipulator="manipulator" :groups="groupedNodes" @nodeSelected="$event.selectExclusively()" />
 
-        <template v-slot:actions>
+        <template v-slot:actions v-if="!isGroupCompactModeActive">
             <panel-action-button
                     @click="removeNode"
                     danger
@@ -152,6 +157,10 @@ export default class DetailGroupPanel extends Mixins(NodeCommonPanelMixin) {
         }
 
         return Array.from(map.values());
+    }
+
+    public get isGroupCompactModeActive() {
+        return this.areaManipulator.graphArea.modeGroupCompact;
     }
 }
 </script>

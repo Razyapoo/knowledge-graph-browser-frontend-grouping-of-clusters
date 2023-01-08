@@ -3,6 +3,7 @@ import Application from './component/Application.vue';
 import Vuetify from 'vuetify/lib';
 import i18n from './i18n';
 import cytoscape from "cytoscape";
+// import cytoscapeTooltip from 'cytoscape-tooltip';
 
 // Custom translation for data from the server
 require("./LiteralTranslator");
@@ -10,6 +11,7 @@ require("./LiteralTranslator");
 cytoscape.warnings(false);
 
 Vue.use(Vuetify);
+// Vue.use(cytoscapeTooltip);
 
 const vuetify = new Vuetify({
     icons: {

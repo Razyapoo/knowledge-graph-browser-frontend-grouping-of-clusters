@@ -12,7 +12,9 @@
                     :area-manipulator="areaManipulator"
                     :layout-manager="layouts"
                     :mode-compact="modeCompact"
+                    :mode-group-compact="modeGroupCompact"
                     @compact-mode-change="modeCompact = $event"
+                    @group-compact-mode-change = "modeGroupCompact = $event"
                     @new-manipulator="areaManipulator = $event"
             />
             <side-panel
@@ -218,6 +220,7 @@ import {ConfigurationChooserComponentModes} from "@/component/ConfigurationChoos
     })
 export default class Application extends Mixins(ApplicationLoadStoreMixin) {
     modeCompact: boolean = false;
+    modeGroupCompact: boolean = false;
 
     /**
      * Class responsible for communication with server.

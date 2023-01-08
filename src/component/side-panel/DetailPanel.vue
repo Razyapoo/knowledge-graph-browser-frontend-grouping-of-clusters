@@ -50,6 +50,10 @@
                     </v-row>
                 </v-alert>
 
+                <v-card v-if="isGroupCompactModeActive" outlined class="mb-5">
+                    <v-card-text>{{ $tc('group_compact.enabled') }}</v-card-text>
+                </v-card>
+                
                 <!-- DETAIL -->
                 <v-card v-if="!node.IRI.startsWith('pseudo_parent')" outlined :disabled="!node.isDetailActual" :loading="!node.isDetailActual" class="mb-5 detail">
                     <v-card-title>{{ $t("side_panel.detail_panel.detail") }}</v-card-title>
@@ -72,7 +76,7 @@
                 </v-card>
 
                 <!-- EXPANSIONS AND VIEWS -->
-                <v-card v-if="!node.IRI.startsWith('pseudo_parent')" outlined :loading="viewSets === null" class="mb-5">
+                <v-card v-if="!node.IRI.startsWith('pseudo_parent') && !isGroupCompactModeActive" outlined :loading="viewSets === null" class="mb-5">
                     <v-card-title>{{ $t("side_panel.detail_panel.views") }}</v-card-title>
                     <template v-if="viewSets !== null">
                         <v-list v-if="viewSets.length">
@@ -98,6 +102,10 @@
                         {{ $t("side_panel.detail_panel.fetching_views") }}
                     </v-card-text>
                 </v-card>
+                <v-card v-else-if="isGroupCompactModeActive" outlined class="mb-5">
+                    <v-card-title>{{ $t("side_panel.detail_panel.views") }}</v-card-title>
+                    <v-card-text>{{ $t("group_compact.view_availability") }}</v-card-text>
+                </v-card>
 
                 <!-- TYPE OF THE NODE -->
                 <v-card v-if="!node.IRI.startsWith('pseudo_parent')" outlined class="mb-5">
@@ -116,7 +124,8 @@
                         {{ $t("side_panel.detail_panel.no_type_info") }}
                     </v-card-text>
                 </v-card>
-                <v-expansion-panels accordion multiple v-if="areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView">
+
+                <v-expansion-panels accordion multiple v-if="areaManipulator.layoutManager.currentLayout.constraintRulesLoaded && areaManipulator.layoutManager.currentLayout.supportsHierarchicalView && !isGroupCompactModeActive">
                     <v-expansion-panel v-if="node.children.length > 0">
                         <v-expansion-panel-header>
                             <div><b v-if="!node.IRI.startsWith('pseudo_parent')">List of children</b> <b v-else>List of nodes</b> - {{ $tc('side_panel.node_grouped_list.number_items', node.children.length) }}</div>
@@ -153,7 +162,7 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
 
-        <template v-if="!node.IRI.startsWith('pseudo_parent')" v-slot:actions>
+        <template v-if="!node.IRI.startsWith('pseudo_parent') && !isGroupCompactModeActive" v-slot:actions>
             <panel-action-button
                     @click="removeNode"
                     danger
@@ -188,7 +197,6 @@
                     :help="$tc('side_panel.' + (node.lockedForLayouts ? 'unlock' : 'lock') + '_for_layouts_desc', 1)"
             />
             <panel-action-button
-                    :width="1"
                     v-if="node.belongsToGroup"
                     @click="manipulator.leaveGroup([node], node.belongsToGroup)"
                     :icon="icons.leave"
@@ -317,6 +325,12 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
             let label1: string = "";
             let label2: string = "";
 
+            // if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
+            // else if (n1 instanceof NodeGroup) label1 = n1.mostFrequentType?.label;
+
+            // if (n2 instanceof Node) label2 = n2.currentView?.preview?.label; 
+            // else if (n2 instanceof NodeGroup) label2 = n2.mostFrequentType?.label;
+
             if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
             else if (n1 instanceof NodeGroup) label1 = n1.getName;
 
@@ -338,6 +352,7 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
         if (this.searchValue != "" && this.searchValue) {
             filteredNodes = nodes.filter(node => { 
                 if (node instanceof Node) return node.currentView?.preview?.label.toLowerCase().includes(this.searchValue.toLowerCase());
+                // else if (node instanceof NodeGroup) return node.mostFrequentType?.label.toLowerCase().includes(this.searchValue.toLowerCase());
                 else if (node instanceof NodeGroup) return node.getName.toLowerCase().includes(this.searchValue.toLowerCase());
             })
         }
@@ -350,10 +365,14 @@ export default class DetailPanel extends Mixins(NodeCommonPanelMixin) {
     }
 
     private getLabel(node: NodeCommon) {
-            if (node instanceof Node) return node.currentView?.preview ? node.currentView.preview.label : "-";
-            // if (node instanceof NodeGroup) return node.mostFrequentType ? node.mostFrequentType.label + " (" + node.leafNodes.length + ")" : "-";
-            if (node instanceof NodeGroup) return node.getName;
-        }
+        if (node instanceof Node) return node.currentView?.preview ? node.currentView.preview.label : "-";
+        // if (node instanceof NodeGroup) return node.mostFrequentType ? node.mostFrequentType.label + " (" + node.leafNodes.length + ")" : "-";
+        if (node instanceof NodeGroup) return node.getName;
+    }
+
+    public get isGroupCompactModeActive() {
+        return this.areaManipulator.graphArea.modeGroupCompact;
+    }
 
     // @Emit('nodeSelected')
     // private nodeSelected(node: NodeCommon) {

@@ -35,6 +35,7 @@ export default class GraphElementNode extends Mixins(GraphElementNodeMixin) {
      * @inheritDoc
      */
     protected registerElement(): void {
+        // this.isNodeNotGroup = true;
         let position = this.node.onMountPosition ? {x: this.node.onMountPosition[0], y: this.node.onMountPosition[1]} : {x: 0, y: 0};
         this.setHierarchicalInfo();
         // All parameters here must correspond to functions trigger by watchers
@@ -98,6 +99,12 @@ export default class GraphElementNode extends Mixins(GraphElementNodeMixin) {
                 this.node.visualGroupClass = null;
             }
 
+            // update the depth of a hierarchy
+            // if ((this.areaManipulator.globalHierarchicalDepth < this.node.hierarchicalLevel) && this.areaManipulator.groupsToCluster.find(groupToCluster => groupToCluster === this.node.hierarchicalClass) && !this.node.mountedFromGroup) {
+            //     this.areaManipulator.globalHierarchicalDepth = this.node.hierarchicalLevel;
+            // }
+
+            // this.node.mountedFromGroup = false;
         }
     }
         

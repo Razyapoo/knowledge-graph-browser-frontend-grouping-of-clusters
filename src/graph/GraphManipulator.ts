@@ -43,7 +43,7 @@ export default class GraphManipulator {
             }
         }
 
-        if (!node.mounted) {
+        if (!node.mounted && !node.isUnmountedAndHiddenInHierarchy) {
             node.mounted = true;
             await Vue.nextTick();
             node.element.element.position(this.area.getCenterPosition());
@@ -119,6 +119,7 @@ export default class GraphManipulator {
                     nodeGroup.addNode(node);
                     node.mounted = false;
                 } else if (node instanceof Node) {
+                    node.mounted = false;
                     nodeGroup.addNode(node);
                 }
 
@@ -185,7 +186,9 @@ export default class GraphManipulator {
                 }
                 else { 
                     node.belongsToGroup = null;
-                    node.mounted = true;
+                    node.isUnmountedAndHiddenInHierarchy = group.isUnmountedAndHiddenInHierarchy;
+                    if (!node.isUnmountedAndHiddenInHierarchy) 
+                        node.mounted = true;
                 }
 
                 if (group.parent) {
@@ -193,6 +196,7 @@ export default class GraphManipulator {
                     if (!node.parent.children.find(child => child.identifier === node.identifier)) {
                         node.parent.children.push(node);
                     }
+                    // node.parent.children.push(node);
                 }
                 node.hierarchicalClass = group.hierarchicalClass;
                 node.visualGroupClass = group.visualGroupClass;
@@ -200,6 +204,7 @@ export default class GraphManipulator {
             } else {
                 node.belongsToGroup = null;
                 node.mounted = true;
+                // node.mountedFromGroup = true;
             }
         }
 
@@ -212,7 +217,9 @@ export default class GraphManipulator {
             this.setNewTopmostGroupAncestor(node);
         });
         group.leafNodes = [];
+        // group.checkForNodes();
         this.graph.removeGroupIgnoreNodes(group);
+        // if (!group.isUnmountedAndHiddenInHierarchy) 
         this.area.layoutManager.currentLayout.onGroupBroken(group.nodes, group);
     }
 
@@ -221,6 +228,7 @@ export default class GraphManipulator {
         for (let node of nodes) {
             node.belongsToGroup = newGroup;
             newGroup.addNode(node, true);
+            // if (this.area?.layoutManager?.currentLayout?.supportsHierarchicalView && this.area?.layoutManager?.currentLayout?.constraintRulesLoaded) {
             group.nodes.splice(group.nodes.indexOf(node), 1);
             if (node instanceof Node) {
                 this.setNewTopmostGroupAncestor(node);
@@ -242,6 +250,7 @@ export default class GraphManipulator {
                 if (!newGroup.parent.children.find(child => child.identifier === newGroup.identifier)) {
                     newGroup.parent.children.push(newGroup);
                 }
+                // group.parent.children.push(newGroup);   
             }
             newGroup.hierarchicalLevel = group.hierarchicalLevel;
             newGroup.hierarchicalClass = group.hierarchicalClass;
@@ -252,10 +261,10 @@ export default class GraphManipulator {
             }
         } else {
             group.nodes = group.nodes.filter(node => !nodes.includes(node));
-            newGroup.onMountPosition = [group.element?.element?.position().x, group.element?.element?.position().y];
-            newGroup.mounted = true;
         }
         
+        newGroup.onMountPosition = [group.element?.element?.position().x, group.element?.element?.position().y];
+        newGroup.mounted = true;
         group.checkForNodes();
         newGroup.checkForNodes();
         
@@ -274,6 +283,7 @@ export default class GraphManipulator {
                 }
 
                 if (group.parent) {
+                    // group.parent.children.push(node);
                     node.parent = group.parent;
                     if (!node.parent.children.find(child => child.identifier === node.identifier)) {
                         node.parent.children.push(node);
@@ -300,6 +310,8 @@ export default class GraphManipulator {
             
         }
         
+        // if (!this.layoutManager?.currentLayout?.supportsHierarchicalView || !this.layoutManager?.currentLayout?.constraintRulesLoaded) group.nodes = group.nodes.filter(node => !nodes.includes(node));
+
         group.checkForNodes();
         this.area.layoutManager.currentLayout.onGroupBroken(nodes, group);
     }

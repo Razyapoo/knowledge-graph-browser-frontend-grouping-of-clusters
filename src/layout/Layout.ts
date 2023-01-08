@@ -38,6 +38,14 @@ export default abstract class Layout implements ObjectSave {
      */
     public readonly supportsCompactMode: boolean = false;
 
+    public readonly supportsGroupCompactMode: boolean = false;
+
+    /**
+     * Contains elements in the compact mode or null if the compact mode is turned off.
+     * @non-reactive
+     */
+    public compactMode: cytoscape.Collection | null;
+
     /**
      * When layout became active, that means it starts receiving events.
      */
@@ -74,6 +82,7 @@ export default abstract class Layout implements ObjectSave {
      * @param edges List of edges presented in the compact mode
      */
     onCompactMode(nodes: NodeCommon[] | null, edges: EdgeCommon[] | null) {}
+    onGroupCompact() {};
 
     /**
      * When some node changed its lockedForLayout property
@@ -87,13 +96,11 @@ export default abstract class Layout implements ObjectSave {
      */
     onGroupBroken(nodes: NodeCommon[], group: NodeGroup) {
         nodes.forEach(node => {
-            if (!node.belongsToGroup) {
+            if (!node.belongsToGroup && !node.isUnmountedAndHiddenInHierarchy) {
                 node.mounted = true
             }
         });
     }
-
-    onGroupChangedCompact() {};
 
     abstract restoreFromObject(object: any): void;
 

@@ -44,6 +44,9 @@ side_panel:
       ffuf: The node is hidden both by filter and user. To show it, change filter options and visibility of the node.
     part_of_group: This node is part of a group with total {n} nodes.
     go_to_group: go to group
+    parent_node: This node is a child of a node
+    group_parent_node: This group is a child of a node
+    go_to_parent: go to parent 
     different_configuration: This node has been loaded under the {configuration-name} configuration. Refresh this node to use the new configuration.
   list_panel:
     title: List of selected nodes
@@ -228,6 +231,9 @@ layout_dialog:
 
 graph:
   groupNode: single node | {n} resources
+  fit: Fit
+  compact: Compact mode
+  group_compact: Group compact mode
 
 configuration_selection:
   meta_configuration:
@@ -289,8 +295,14 @@ zooming:
   local_grouping: Local grouping of clusters
   local_grouping_hint: Select the node to which you want to apply local grouping of clusters
   zooming: Zoom In / Zoom Out
+  zoom_in: Zoom In
+  zoom_out: Zoom Out
 hierarchy:
   hierarchical_class: Hierarchical class
   hint: 'Hint: Choose any type of cluster grouping as well as zoom in/out to take advantage of the mapping platforms features'
 visual_group:
   visual_group_class: Visual class
+
+group_compact:
+  view_availability: View expansions are not available in group compact mode  
+  enabled: Group compact mode is enabled

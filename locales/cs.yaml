@@ -48,6 +48,9 @@ side_panel:
         upravte parametry filtru a změňte viditelnost uzlu.
     part_of_group: 'Tento uzel je součástí skupiny obsahující {n} uzlů.'
     go_to_group: přejít ke skupině
+    group_parent_node: Tato skupina je dítětem uzlu
+    parent_node: Tento uzel je dítětem uzlu
+    go_to_parent: přejít k rodiču 
     different_configuration: Tento uzel byl načten pod konfigurací {configuration-name}. Obnovte uzel pro použití nové konfigurace.
   list_panel:
     title: Seznam označených vrcholů
@@ -265,6 +268,9 @@ layout_dialog:
   close: Zavřít
 graph:
   groupNode: 'jeden uzel | {n} uzly | {n} uzlů'
+  fit: Přizpůsobit
+  compact: Kompaktní režim
+  group_compact: Skupinový kompaktní režim
 configuration_selection:
   meta_configuration:
     title: Výběr konfigurace
@@ -305,6 +311,7 @@ configuration_selection:
   close: Zavřít
   back: Zpět
   go_to_graph: Jít ke grafu
+  
 load_dialog:
   title: Načíst graf
   error: Nepodařilo se načíst graf z URL. Zkontrolujte její správnost.
@@ -322,8 +329,14 @@ zooming:
   local_grouping: Lokální seskupení shluků 
   zooming: Přiblížení / Oddálení
   local_grouping_hint: Vyberte uzel, na který chcete použit lokální seskupení shluků
+  zoom_in: Přiblížit
+  zoom_out: Oddálit
 hierarchy:
   hierarchical_class: Hierarchická třída
   hint: 'Vyberte si jakýkoli typ seskupení shluků a také přibližení/oddalení, abyste mohli využívat funkce mapovacích platforem'
 visual_group:
   visual_group_class: Vizuální třída
+
+group_compact:
+  view_availability: Expanze pohledů nejsou k dispozici ve skupinovém kompaktním režimu
+  enabled: Je zapnutý skupinový kompaktní režim

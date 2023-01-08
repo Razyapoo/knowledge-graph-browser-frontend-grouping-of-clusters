@@ -3,7 +3,7 @@ import {ResponseStylesheet} from "../../remote-server/ResponseInterfaces";
 import ViewOptions from "../../graph/ViewOptions";
 import clone from "clone";
 import cytoscape from "cytoscape";
-import { mdiCircle } from "@mdi/js";
+import { mdiBlackMesa, mdiCircle } from "@mdi/js";
 import CircleLayout from "@/layout/layouts/CircleLayout/CircleLayout";
 import { wrap } from "module";
 import { relative } from "path";
@@ -175,15 +175,15 @@ export default class GraphAreaStylesheetMixin extends Vue {
                 }
             },
 
-            // {
-            //     selector: ".__compact_inactive",
-            //     style: {
-            //         opacity: 0.05,
-            //         events: "no",
-            //         "z-index": 0,
-            //         position: "relative",
-            //     }
-            // },
+            {
+                selector: ".__compact_inactive",
+                style: {
+                    opacity: 0.05,
+                    events: "no",
+                    "z-index": 0,
+                    position: "relative",
+                }
+            },
 
             {
                 selector: ".__node_group",

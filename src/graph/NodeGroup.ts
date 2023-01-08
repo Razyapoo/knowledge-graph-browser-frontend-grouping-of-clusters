@@ -101,12 +101,20 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
         
     }
 
+    // public setLabel(newLabel: string) {
+    //     this.label = newLabel;
+    // }
+
+    // public get groupLabel() {
+    //     return this.label ?? this.mostFrequentType?.label
+    // }
+
     /**
      * Completely removes NodeGroup with all Nodes from the graph.
      * Safe to call anytime.
      */
-    public remove() {
-        this.nodes.forEach(node => node.remove());
+    public remove(isGroupRemoval: boolean = true) {
+        this.nodes.forEach(node => node.remove(isGroupRemoval));
         
         if (this.parent) {
             if (this.parent.children?.indexOf(this) > -1) {
@@ -122,6 +130,7 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
         }
 
         this.selected = false;
+        this.nodes = []
         this.graph.removeGroupIgnoreNodes(this);
     }
 
@@ -212,6 +221,10 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
             if (!sourceNode.isVisible) continue;
 
             // *For every edge (and therefore neighbour) of the node*
+            // let sourceEdges = []
+            // if (sourceNode instanceof NodeGroup) sourceEdges = [...Object.values(sourceNode.groupEdgesCache.in), ...Object.values(sourceNode.groupEdgesCache.out)]
+            // if (sourceNode instanceof Node) sourceEdges = sourceNode.edges
+            // if (sourceEdges) {
             for (let edge of sourceNode.edges) {
 
                 let targetNode: NodeCommon;
@@ -224,6 +237,23 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
                         continue;
                     }
 
+
+
+                    // if ((sourceNode instanceof NodeGroup) && sourceEdges.find(existingEdge => existingEdge.source == this && existingEdge.target == targetNode && existingEdge.type == edge.type)) continue;
+                    // if (targetNode instanceof NodeGroup) {
+                    //     let existingEdges = [];
+                    //     if (targetNode.groupEdgesCache?.in) existingEdges = Object.values(targetNode.groupEdgesCache?.in);
+                    //     // if (targetNode.groupEdgesCache?.in_group) existingEdges = [...existingEdges, ...Object.values(targetNode.groupEdgesCache?.in_group)];
+                    //     if (targetNode.groupEdgesCache?.out) existingEdges = [...existingEdges, ...Object.values(targetNode.groupEdgesCache?.out)];
+                    //     if (existingEdges.length > 0) { 
+                        //         let existingEdge = existingEdges.find(existingEdge => existingEdge.source == this && existingEdge.target == targetNode && existingEdge.type == edge.type);
+                    //         if (existingEdge)
+                    //         {
+                        //             this.groupEdgesCache.in[existingEdge.identifier] = existingEdge;
+                        //             continue; 
+                        //         }
+                    //     }
+                    // }
                     
                 } else {
                     targetNode = edge.source.selfOrTopmostGroupAncestor;
@@ -235,8 +265,28 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
                     
                     // XOR
                     if (((targetNode instanceof NodeGroup) && !exclusivelyTargetIsGroup) || ((targetNode instanceof Node) && exclusivelyTargetIsGroup)) continue;
+                    // if ((sourceNode instanceof NodeGroup) && sourceEdges.find(existingEdge => existingEdge.source == targetNode && existingEdge.target == this && existingEdge.type == edge.type)) continue;
+                    // if (targetNode instanceof NodeGroup) {
+                    //     let existingEdges = [];
+                    //     if (targetNode.groupEdgesCache?.in) existingEdges = Object.values(targetNode.groupEdgesCache?.in);
+                    //     // if (targetNode.groupEdgesCache?.in_group) existingEdges = [...existingEdges, ...Object.values(targetNode.groupEdgesCache?.in_group)];
+                    //     if (targetNode.groupEdgesCache?.out) existingEdges = [...existingEdges, ...Object.values(targetNode.groupEdgesCache?.out)];
+                    //     // if (existingEdges.length > 0 && existingEdges.find(existingEdge => existingEdge.source == targetNode && existingEdge.target == this && existingEdge.type == edge.type)) continue; 
+                    //     if (existingEdges.length > 0) { 
+                    //         let existingEdge = existingEdges.find(existingEdge => existingEdge.source == targetNode && existingEdge.target == this && existingEdge.type == edge.type);
+                    //         if (existingEdge)
+                    //         {
+                    //             this.groupEdgesCache.out[existingEdge.identifier] = existingEdge;
+                    //             continue; 
+                    //         }
+                    //     }
+                    // }
+
+                    // if ((targetNode instanceof NodeGroup)  && targetNode.vuexComponent?.visibleGroupEdges.length > 0 && targetNode.vuexComponent?.visibleGroupEdges.find(existingEdge => existingEdge.source == targetNode && existingEdge.target == this && existingEdge.type == edge.type)) continue;
                 }
 
+                // if (!this.element || !targetNode.element) continue;
+                
                 if (
                     !edge.isVisible ||
                     !targetNode.isVisible
@@ -375,7 +425,7 @@ export default class NodeGroup extends NodeCommon implements ObjectSave {
 
     get getName() {
         
-        if (this.name == "") return "(" + this.leafNodes.length + ") " + this.mostFrequentType.label;
+        if (this.name == "") return "(" + this.leafNodes.length + ") " + this.mostFrequentType?.label;
         else return "(" + this.leafNodes.length + ") " + this.name;
     }
     /**

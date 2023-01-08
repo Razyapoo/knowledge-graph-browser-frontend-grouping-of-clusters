@@ -131,6 +131,12 @@
                 let label1: string = "";
                 let label2: string = "";
 
+                // if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
+                // else if (n1 instanceof NodeGroup) label1 = n1.mostFrequentType?.label;
+
+                // if (n2 instanceof Node) label2 = n2.currentView?.preview?.label; 
+                // else if (n2 instanceof NodeGroup) label2 = n2.mostFrequentType?.label;
+
                 if (n1 instanceof Node) label1 = n1.currentView?.preview?.label; 
                 else if (n1 instanceof NodeGroup) label1 = n1.getName;
 
@@ -152,6 +158,7 @@
             if (this.searchValue != "" && this.searchValue) {
                 filteredNodes = nodes.filter(node => { 
                     if (node instanceof Node) return node.currentView?.preview?.label.toLowerCase().includes(this.searchValue.toLowerCase());
+                    // else if (node instanceof NodeGroup) return node.mostFrequentType?.label.toLowerCase().includes(this.searchValue.toLowerCase());
                     else if (node instanceof NodeGroup) return node.getName.toLowerCase().includes(this.searchValue.toLowerCase());
                 })
             }

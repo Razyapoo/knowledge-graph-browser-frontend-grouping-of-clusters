@@ -6,6 +6,7 @@ import GraphElementNode from "../component/graph/GraphElementNode.vue";
 import GraphElementNodeGroup from "../component/graph/GraphElementNodeGroup.vue";
 import NodeGroup from "./NodeGroup";
 import EdgeCommon from "./EdgeCommon";
+import { Position } from "cytoscape";
 
 export default abstract class NodeCommon implements ObjectSave {
     /**
@@ -30,6 +31,7 @@ export default abstract class NodeCommon implements ObjectSave {
     // Need for group compact mode
     groupCompactBelongsToGroupCache: NodeGroup | null = null;
     
+    // groupCompact_opened: boolean = false;
     /**
      * You can specify the initial position of node.
      * VISUAL GRAPH FEATURE
@@ -41,6 +43,7 @@ export default abstract class NodeCommon implements ObjectSave {
      * GraphElementNodeMixin is a common ancestor for both GraphElementNode and GraphElementNodeGroup.
      */
     element: GraphElementNodeMixin | GraphElementNode | GraphElementNodeGroup;
+
 
     /**
      * All incoming and outgoing edges.
@@ -73,13 +76,15 @@ export default abstract class NodeCommon implements ObjectSave {
     /** Indicates whether a node is mounted in hierarchy. In case it is not mounted in a graph area. */
     isUnmountedAndHiddenInHierarchy: boolean = false;
 
+    // hasChildrenUnmountedAndHiddenInHierarchy: boolean = false;
+
     abstract get shownByFilters(): boolean;
 
     /**
      * Safely removes the element from the graph.
      * This method should properly unregister everything about the node.
      */
-    public abstract remove(): void;
+    public abstract remove(isGroupRemoval?: boolean): void;
 
     /**
      * Unique identifier for both Node and NodeGroup.
@@ -154,4 +159,5 @@ export default abstract class NodeCommon implements ObjectSave {
         this.graph.groups.forEach(g => g.selected = false);
         this.selected = true;
     }
+
 }

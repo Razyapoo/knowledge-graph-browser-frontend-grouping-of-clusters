@@ -73,6 +73,19 @@ export class Graph implements ObjectSave {
         return [...nodes, ...this.groups.filter(group => group.isUnmountedAndHiddenInHierarchy)];
     }
 
+    /** returns mounted nodes only */ 
+    // public get mountedNodes(): Node[] {
+    //     let nodes: Node[] = [];
+    //     for (let iri in this.nodes) {
+    //         let node = this.nodes[iri];
+    //         if (node.mounted && !node.belongsToGroup) {
+    //             nodes.push(node);
+    //         }
+    //     }
+
+    //     return nodes;
+    // }
+    
     public get nodesVisual(): NodeCommon[] {
         return this.vuexComponent?.nodesVisual ?? this.nocache_nodesVisual;
     }
@@ -268,6 +281,16 @@ export class Graph implements ObjectSave {
         }
 
         return node;
+    }
+
+    public unselectNodesHiddenInHierarchy() {
+        for (let IRI in this.nodes) {
+            let node = this.nodes[IRI];
+            if (node.isUnmountedAndHiddenInHierarchy) node.selected = false;
+        }
+        this.groups.forEach(g => {
+            if (g.isUnmountedAndHiddenInHierarchy) g.selected = false;
+        });
     }
 
     //#region Object save methods
